@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#fdf3f8">
+<title>攻略路阳瑞</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;overflow:hidden;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+    background:#f7f1f6;color:#443f52;
+    -webkit-font-smoothing:antialiased;
+    overscroll-behavior:none;
+  }
+  #app{position:fixed;inset:0;display:flex;flex-direction:column;}
+
+  .screen{
+    position:absolute;inset:0;display:none;flex-direction:column;
+    background:
+      radial-gradient(120% 80% at 10% 0%, #ffffff 0%, rgba(255,255,255,0) 55%),
+      radial-gradient(100% 70% at 100% 100%, #fadbe8 0%, rgba(250,219,232,0) 60%),
+      linear-gradient(170deg,#fdf7fb 0%,#f8ecf3 55%,#f0e8f7 100%);
+  }
+  .screen.active{display:flex;}
+
+  /* ---------- 开始页 ---------- */
+  #screen-start{align-items:center;justify-content:center;padding:24px;overflow-y:auto;}
+  .start-card{
+    width:100%;max-width:400px;background:rgba(255,255,255,.84);
+    border:1px solid rgba(232,200,218,.55);border-radius:22px;
+    padding:30px 24px 26px;box-shadow:0 18px 50px rgba(200,150,180,.18);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    animation:fadeUp .55s cubic-bezier(.2,.8,.3,1) both;
+  }
+  @keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}}
+  .brand{font-size:11px;letter-spacing:.42em;color:#c9a3ba;margin-bottom:12px;}
+  .start-card h1{font-size:27px;font-weight:700;letter-spacing:.06em;color:#453a4d;margin-bottom:8px;}
+  .start-card h1 span{color:#d489aa;}
+  .sub{font-size:12.5px;line-height:1.9;color:#a895a5;margin-bottom:24px;}
+  .lbl{display:block;font-size:12px;letter-spacing:.16em;color:#b09aab;margin:0 0 9px 2px;}
+  #input-name{
+    width:100%;padding:14px 16px;font-size:15px;font-family:inherit;color:#443f52;
+    background:rgba(255,255,255,.92);border:1.5px solid #ecdfe8;border-radius:14px;
+    outline:none;transition:border-color .2s,box-shadow .2s;margin-bottom:24px;
+  }
+  #input-name::placeholder{color:#c5b6c2;}
+  #input-name:focus{border-color:#e9a8c4;box-shadow:0 0 0 4px rgba(233,168,196,.18);}
+  .gender-row{display:flex;gap:9px;margin-bottom:26px;}
+  .gender-btn{
+    flex:1;padding:12px 0;font-size:13.5px;font-family:inherit;cursor:pointer;
+    background:rgba(255,255,255,.75);border:1.5px solid #ecdfe8;border-radius:13px;
+    color:#b09aab;transition:all .2s;
+  }
+  .gender-btn.on{
+    background:linear-gradient(160deg,#efa8c6,#d47fa6);border-color:transparent;
+    color:#fff;font-weight:600;box-shadow:0 8px 20px rgba(212,127,166,.32);
+  }
+  .btn-main{
+    width:100%;padding:16px;font-size:15.5px;font-family:inherit;font-weight:600;
+    letter-spacing:.12em;color:#fff;cursor:pointer;border:none;border-radius:15px;
+    background:linear-gradient(135deg,#efa8c6,#d47fa6);
+    box-shadow:0 10px 26px rgba(212,127,166,.32);
+    transition:transform .14s,box-shadow .2s;
+  }
+  .btn-main:active{transform:scale(.975);}
+  .btn-ghost{
+    width:100%;margin-top:11px;padding:14px;font-size:13.5px;font-family:inherit;
+    cursor:pointer;border-radius:15px;color:#b09aab;
+    background:rgba(255,255,255,.65);border:1.5px solid #ece0e9;
+    transition:all .2s;
+  }
+  .btn-ghost:active{background:#f7e9f1;}
+  .tip{margin-top:20px;font-size:11px;line-height:1.9;color:#bca9b6;text-align:center;}
+
+  /* ---------- 游戏页 ---------- */
+  #screen-game{display:none;}
+  #screen-game.active{display:flex;}
+
+  .status{
+    flex:0 0 auto;padding:12px 14px 10px;
+    background:rgba(255,255,255,.74);
+    border-bottom:1px solid rgba(226,196,214,.5);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    padding-top:calc(12px + env(safe-area-inset-top));
+  }
+  .stats{display:flex;gap:10px;}
+  .stat{flex:1;min-width:0;}
+  .stat-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;}
+  .stat-name{font-size:10.5px;letter-spacing:.08em;color:#ab98a8;}
+  .stat-val{font-size:12px;font-weight:700;color:#7a5f72;}
+  .track{height:5px;border-radius:99px;background:#f4e6ee;overflow:hidden;}
+  .fill{height:100%;width:0;border-radius:99px;transition:width .5s cubic-bezier(.3,.9,.3,1);}
+  #fill-fav{background:linear-gradient(90deg,#f7b8ce,#ec8fb4);}
+  #fill-dep{background:linear-gradient(90deg,#9fd6c4,#5fbfa3);}
+  #fill-cool{background:linear-gradient(90deg,#b8aede,#8a7fc0);}
+
+  .toolbar{display:flex;gap:7px;justify-content:flex-end;margin-top:9px;}
+  .toolbar button{
+    padding:6px 14px;font-size:11.5px;font-family:inherit;cursor:pointer;
+    border-radius:99px;color:#a48fa0;background:rgba(255,255,255,.88);
+    border:1px solid #ece0e9;transition:all .18s;
+  }
+  .toolbar button:active{background:#f7e4ef;color:#b96e92;}
+
+  .log{
+    flex:1 1 auto;min-height:0;overflow-y:auto;padding:18px 16px 8px;
+    -webkit-overflow-scrolling:touch;scroll-behavior:smooth;
+  }
+  .msg{margin-bottom:15px;animation:msgIn .35s ease both;}
+  @keyframes msgIn{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:none;}}
+  .speaker{
+    display:inline-block;font-size:11.5px;letter-spacing:.1em;color:#d489aa;
+    padding:2px 0;margin-bottom:5px;font-weight:600;
+  }
+  .speaker::before{content:"—— ";}
+  .speaker-player{color:#b3a3b8;}
+  .line{
+    font-size:15px;line-height:1.95;color:#4a4253;word-break:break-word;
+    letter-spacing:.01em;
+  }
+  .msg-narration .line{color:#8a8194;font-size:14.5px;}
+  .msg-dialog .line{color:#443c51;}
+  .msg-player{text-align:right;}
+  .msg-player .line{color:#8a7b8c;font-style:italic;}
+
+  .choices{
+    flex:0 0 auto;padding:10px 14px calc(14px + env(safe-area-inset-bottom));
+    display:flex;flex-direction:column;gap:9px;
+    background:linear-gradient(to top,rgba(252,244,249,.98) 55%,rgba(252,244,249,0));
+  }
+  .choices:empty{display:none;}
+  .choice{
+    width:100%;text-align:left;padding:14px 16px;font-size:14px;line-height:1.6;
+    font-family:inherit;color:#4a4253;cursor:pointer;
+    background:rgba(255,255,255,.94);border:1.5px solid #ecdfe8;border-radius:14px;
+    box-shadow:0 3px 10px rgba(200,160,185,.10);
+    transition:transform .14s,background .2s,border-color .2s,box-shadow .2s;
+    animation:chIn .32s cubic-bezier(.2,.8,.3,1) both;
+  }
+  @keyframes chIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  .choice:active{
+    transform:scale(.985);background:#fbeaf3;border-color:#e9a8c4;
+    box-shadow:0 2px 6px rgba(200,160,185,.2);
+  }
+  .choice::before{content:"▸ ";color:#e2afc6;}
+
+  /* ---------- 结局页 ---------- */
+  #screen-end{align-items:center;justify-content:center;padding:24px;overflow-y:auto;}
+  .end-card{
+    width:100%;max-width:420px;background:rgba(255,255,255,.88);
+    border:1px solid rgba(232,200,218,.55);border-radius:22px;
+    padding:32px 24px 26px;box-shadow:0 18px 50px rgba(200,150,180,.18);
+    text-align:center;animation:fadeUp .6s cubic-bezier(.2,.8,.3,1) both;
+  }
+  .end-tag{font-size:10.5px;letter-spacing:.5em;color:#d3b5c7;margin-bottom:14px;}
+  .end-card h2{font-size:24px;letter-spacing:.1em;color:#453a4d;margin-bottom:20px;}
+  .end-text{font-size:14px;line-height:2.05;color:#5a4f62;text-align:left;margin-bottom:24px;}
+  .end-text p{margin-bottom:12px;}
+  .end-stats{
+    display:flex;justify-content:center;gap:22px;margin-bottom:26px;
+    padding-top:18px;border-top:1px dashed #ecdbe6;
+  }
+  .end-stat{font-size:11px;letter-spacing:.08em;color:#bca9b6;}
+  .end-stat b{display:block;font-size:19px;color:#d489aa;margin-top:5px;font-weight:700;}
+
+  /* ---------- 其他 ---------- */
+  #toast{
+    position:fixed;left:50%;bottom:14%;transform:translate(-50%,8px);
+    padding:9px 20px;border-radius:99px;font-size:13px;font-weight:600;
+    background:rgba(212,127,166,.95);color:#fff;white-space:nowrap;
+    opacity:0;pointer-events:none;transition:all .28s ease;z-index:99;
+    box-shadow:0 8px 22px rgba(190,120,155,.3);
+  }
+  #toast.on{opacity:1;transform:translate(-50%,0);}
+
+  .log::-webkit-scrollbar{width:4px;}
+  .log::-webkit-scrollbar-thumb{background:#edd7e4;border-radius:99px;}
+
+  @media (max-width:360px){
+    .start-card h1{font-size:23px;}
+    .line{font-size:14px;}
+    .choice{font-size:13px;padding:12px 14px;}
+    .toolbar button{padding:6px 11px;font-size:11px;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ===== 开始页 ===== -->
+  <section id="screen-start" class="screen active">
+    <div class="start-card">
+      <div class="brand">T S U N D E R E · S I M</div>
+      <h1>攻略<span>路阳瑞</span></h1>
+      <p class="sub">路阳瑞惜字如金，脸上永远没有表情。<br>可她的素描本里，画满了同一个侧脸。</p>
+
+      <label class="lbl">你的名字</label>
+      <input id="input-name" type="text" maxlength="10" placeholder="请输入你的名字" autocomplete="off">
+
+      <label class="lbl">你的性别</label>
+      <div class="gender-row" id="gender-row">
+        <button type="button" class="gender-btn" data-g="男">男</button>
+        <button type="button" class="gender-btn on" data-g="女">女</button>
+        <button type="button" class="gender-btn" data-g="其他">其他</button>
+      </div>
+
+      <button id="btn-start" class="btn-main">开始游戏</button>
+      <button id="btn-continue" class="btn-ghost" style="display:none;">读取存档</button>
+
+      <p class="tip">好感度 · 依赖度 · 高冷值<br>高冷值越低，她越容易破防。</p>
+    </div>
+  </section>
+
+  <!-- ===== 游戏页 ===== -->
+  <section id="screen-game" class="screen">
+    <div class="status">
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-top"><span class="stat-name">好感度</span><span class="stat-val" id="v-fav">0</span></div>
+          <div class="track"><div class="fill" id="fill-fav"></div></div>
+        </div>
+        <div class="stat">
+          <div class="stat-top"><span class="stat-name">依赖度</span><span class="stat-val" id="v-dep">0</span></div>
+          <div class="track"><div class="fill" id="fill-dep"></div></div>
+        </div>
+        <div class="stat">
+          <div class="stat-top"><span class="stat-name">高冷值</span><span class="stat-val" id="v-cool">60</span></div>
+          <div class="track"><div class="fill" id="fill-cool"></div></div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <button id="btn-save">存档</button>
+        <button id="btn-load">读档</button>
+        <button id="btn-restart">重新开始</button>
+      </div>
+    </div>
+
+    <div class="log" id="log"></div>
+    <div class="choices" id="choices"></div>
+  </section>
+
+  <!-- ===== 结局页 ===== -->
+  <section id="screen-end" class="screen">
+    <div class="end-card">
+      <div class="end-tag">E N D I N G</div>
+      <h2 id="end-title">结局</h2>
+      <div class="end-text" id="end-text"></div>
+      <div class="end-stats" id="end-stats"></div>
+      <button id="btn-again" class="btn-main">重新开始</button>
+    </div>
+  </section>
+
+  <div id="toast"></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ============================================================
+     剧情数据
+     ============================================================ */
+  const SCENES = {
+
+    /* ---------- 1 · 初遇 ---------- */
+    s1: {
+      next: 's2',
+      messages: [
+        { who: '', text: '三月的最后一个星期，你转学到了市立高中。' },
+        { who: '', text: '班主任把你安排在靠窗的最后一排。旁边的座位趴着一个人。' },
+        { who: '', text: '黑色碎发垂在额前，白色卫衣的袖子长出一截，几乎盖住指尖。午后的光落在她后颈上，照出细软的一层绒毛。' },
+        { who: '', text: '你轻轻拉开椅子。她的睫毛颤了颤，没有睁眼。' },
+        { who: '', text: '你离得很近。近到能看见她脸颊上那道浅浅的压痕，和睫毛在眼下投出的一小片阴影。' },
+        { who: '路阳瑞', text: '「……」' },
+        { who: '', text: '她侧过脸，把脸埋进臂弯里。你看见她一小截耳尖，在光里慢慢红了。' }
+      ],
+      choices: [
+        {
+          text: '「你好，我叫{name}，以后请多指教。」',
+          fav: 6, dep: 5, cool: -3,
+          replies: [
+            { who: '', text: '过了很久，她才抬起头。眼睛是很浅的黑色，看人的时候像隔着一层玻璃。' },
+            { who: '路阳瑞', text: '「路阳瑞。」' },
+            { who: '', text: '她顿了两秒，又补了一句。' },
+            { who: '路阳瑞', text: '「……记住了。」' },
+            { who: '', text: '她把脸重新埋回臂弯。你听见卫衣布料里传来一句更轻的补充。' },
+            { who: '路阳瑞', text: '「……{name}。」' },
+            { who: '', text: '不知道为什么，你的心跳漏了一拍。' }
+          ]
+        },
+        {
+          text: '安静地坐下，不去打扰她。',
+          fav: 2, dep: 2, cool: -1,
+          replies: [
+            { who: '', text: '一整节课过去了。下课铃响的时候，一张折好的纸条被推到你桌角。' },
+            { who: '', text: '上面只有三个字——「你的笔。」' },
+            { who: '', text: '你低头，发现早上掉的那支笔不知什么时候被捡了起来，连笔帽都旋好了。' },
+            { who: '', text: '你抬头看她。她正望着窗外，好像什么都没发生过。' },
+            { who: '', text: '可你的笔，明明是掉在走廊上的。' }
+          ]
+        },
+        {
+          text: '「你长得真好看。」',
+          fav: 5, dep: 3, cool: -6,
+          replies: [
+            { who: '', text: '她的动作停住了。' },
+            { who: '', text: '下一秒，她把整张脸埋进卫衣领口里，只露出一双眼睛。' },
+            { who: '路阳瑞', text: '「……无聊。」' },
+            { who: '', text: '可她的耳朵红得像要滴血。' },
+            { who: '', text: '你忍不住笑出声。她瞪了你一眼，耳朵却更红了。' }
+          ]
+        }
+      ]
+    },
+
+    /* ---------- 2 · 雨天 ---------- */
+    s2: {
+      next: 's3',
+      messages: [
+        { who: '', text: '放学时下起了雨。你站在校门口的屋檐下，翻遍了书包也没找到伞。' },
+        { who: '', text: '雨势很大。你正打算冒雨跑回去，头顶忽然落下一片阴影。' },
+        { who: '', text: '路阳瑞撑着一把深蓝色的伞站在你旁边。伞面不大，她只撑到自己一半。' },
+        { who: '路阳瑞', text: '「……顺路。」' },
+        { who: '', text: '她说得非常自然。可校门出去左转是教学楼，右转才是回家的方向。' }
+      ],
+      choices: [
+        {
+          text: '「你的肩膀湿了，往这边靠一点吧。」',
+          fav: 7, dep: 6, cool: -4,
+          replies: [
+            { who: '', text: '她僵了僵，往你这边挪了半步，肩膀刻意和你隔开一小段距离。' },
+            { who: '路阳瑞', text: '「……吵。」' },
+            { who: '', text: '但伞柄上的手指握得很紧，一路都没让伞再偏回去。' },
+            { who: '', text: '走到你家楼下时你才发现，她的半边校服已经湿透了，贴在肩胛骨上。' }
+          ]
+        },
+        {
+          text: '接过伞，帮她举高。',
+          fav: 5, dep: 5, cool: -3,
+          replies: [
+            { who: '', text: '她愣了一下，仰头看伞，又看你。' },
+            { who: '路阳瑞', text: '「……你比我高。」' },
+            { who: '', text: '语气很平，但你总觉得听起来有一点不服气。' },
+            { who: '', text: '你忍不住笑。她抿了抿嘴，把脸别开。' },
+            { who: '', text: '雨声很大。你却听见她很轻地「啧」了一声。' }
+          ]
+        },
+        {
+          text: '「你是不是专门在等我？」',
+          fav: 4, dep: 4, cool: -5,
+          replies: [
+            { who: '路阳瑞', text: '「随便站的。」' },
+            { who: '', text: '她说这句话的时候，脚步一直配合着你的速度。你慢，她就慢。' },
+            { who: '', text: '雨敲在伞面上，像谁在轻轻敲着鼓点。你低头，看见两个影子被伞拢在一起。' }
+          ]
+        }
+      ]
+    },
+
+    /* ---------- 3 · 便利店 ---------- */
+    s3: {
+      next: 's4',
+      messages: [
+        { who: '', text: '晚自习结束，便利店的灯白得发亮。你在关东煮的锅前犹豫。' },
+        { who: '', text: '货架后面，路阳瑞拿着一盒牛奶，正要转身。' },
+        { who: '', text: '她看见你，脚步顿住。转身要走，又折了回来。' },
+        { who: '', text: '一盒热可可被放在收银台上，推到你和店员之间。' },
+        { who: '路阳瑞', text: '「……第二份半价。」' }
+      ],
+      choices: [
+        {
+          text: '「你怎么知道我喜欢喝热可可？」',
+          fav: 8, dep: 8, cool: -4,
+          replies: [
+            { who: '', text: '她没回答，低头撕牛奶盒的吸管包装。撕了两次都没撕开。' },
+            { who: '路阳瑞', text: '「……上次你买过。」' },
+            { who: '', text: '那已经是三个月前的事了。' },
+            { who: '', text: '你怔了一下。她却像被烫到一样，把牛奶往口袋里一塞，快步走出了便利店。' },
+            { who: '', text: '你追到门口，看见她站在路灯下，帽檐压得很低，肩膀有一点僵。' }
+          ]
+        },
+        {
+          text: '「那我请你吃关东煮，一起吃吧。」',
+          fav: 6, dep: 7, cool: -3,
+          replies: [
+            { who: '路阳瑞', text: '「随便。」' },
+            { who: '', text: '她把书包放在靠窗的高脚椅上，坐下了。你们中间隔着一个座位的距离——但她没走。' },
+            { who: '', text: '热气从锅里升起来，模糊了玻璃窗。你偷偷看她，她正低头吹着萝卜上的汤。' },
+            { who: '', text: '睫毛垂下来，安静得像一幅画。' }
+          ]
+        },
+        {
+          text: '「谢谢，我自己来就好。」',
+          fav: 2, dep: 2, cool: -1,
+          replies: [
+            { who: '', text: '她点了点头，把可可推回去，转身出门。' },
+            { who: '', text: '你结账的时候，店员说：「那盒可可，刚才那位同学已经付过钱啦。」' },
+            { who: '', text: '你冲到门口。雨已经停了，街道上只有一个走远的背影。' }
+          ]
+        }
+      ]
+    },
+
+    /* ---------- 4 · 天台 ---------- */
+    s4: {
+      next: 's5',
+      messages: [
+        { who: '', text: '午休的时候，你推开天台的门，发现这里已经有人了。' },
+        { who: '', text: '路阳瑞坐在栏杆边，膝盖上摊着一本素描本，铅笔在纸上走得很轻。' },
+        { who: '', text: '听见声音，她「啪」地合上本子。' },
+        { who: '路阳瑞', text: '「……看什么。」' },
+        { who: '', text: '你还是瞥见了。纸上是一个人的侧脸，线条很淡，画了很多遍，又被擦掉了很多遍。' },
+        { who: '', text: '那个侧脸的轮廓，你有种说不出的熟悉。' }
+      ],
+      choices: [
+        {
+          text: '「画得很好看，能让我看看吗？」',
+          fav: 7, dep: 6, cool: -4,
+          replies: [
+            { who: '', text: '她沉默了很久，久到你以为她会拒绝。' },
+            { who: '', text: '然后她把本子递过来，手指还捏着一角，像随时准备收回去。' },
+            { who: '路阳瑞', text: '「……随便看看。很难看。」' },
+            { who: '', text: '你翻开。整整一页，都是同一个人的侧脸。' },
+            { who: '', text: '翻到最后一页时，你的手停住了——那是你，坐在窗边，垂着眼睫的样子。' }
+          ]
+        },
+        {
+          text: '「原来你会画画啊。」',
+          fav: 5, dep: 4, cool: -3,
+          replies: [
+            { who: '路阳瑞', text: '「嗯。」' },
+            { who: '', text: '她把本子塞进卫衣的大口袋里，低着头，用鞋尖磨了磨地面。' },
+            { who: '', text: '「……别到处说。」' },
+            { who: '', text: '她抬眼看你，那双总像隔着一层玻璃的眼睛，第一次认真地停在你脸上。' }
+          ]
+        },
+        {
+          text: '「抱歉，打扰你了。」转身准备离开。',
+          fav: 1, dep: 1, cool: 1,
+          replies: [
+            { who: '', text: '你走到门口的时候，听见身后传来很轻的一句。' },
+            { who: '路阳瑞', text: '「……门，不用关。」' },
+            { who: '', text: '天台的风把这句话吹得很散。你回头，看见她还坐在那儿，本子摊开在膝盖上。' }
+          ]
+        }
+      ]
+    },
+
+    /* ---------- 5 · 文化祭前夜 ---------- */
+    s5: {
+      next: 's6',
+      messages: [
+        { who: '', text: '文化祭前夜，教室的灯还亮着。你留下来做最后一批装饰。' },
+        { who: '', text: '时钟指向九点半。路阳瑞的座位早就空了。' },
+        { who: '', text: '门被推开。她拎着两瓶水走进来，把其中一瓶放在你桌上。' },
+        { who: '路阳瑞', text: '「……老师让我拿的。」' },
+        { who: '', text: '可是办公室这个点早就锁门了。' }
+      ],
+      choices: [
+        {
+          text: '「骗人，办公室早就锁了。」',
+          fav: 6, dep: 6, cool: -5,
+          replies: [
+            { who: '', text: '她拉开椅子坐下，拧开自己那瓶水喝了一口。' },
+            { who: '路阳瑞', text: '「……你很闲。」' },
+            { who: '', text: '但她一直坐到了你把最后一张纸花折完。' },
+            { who: '', text: '收拾东西的时候，你发现她不知什么时候已经把地扫干净了。' }
+          ]
+        },
+        {
+          text: '「谢谢你特意回来。」',
+          fav: 8, dep: 8, cool: -3,
+          replies: [
+            { who: '', text: '她喝水的动作停了一下。' },
+            { who: '路阳瑞', text: '「……顺路。」' },
+            { who: '', text: '她家的方向，和学校完全相反。' },
+            { who: '', text: '你什么都没说，只是把桌上的纸花推了一半到她那边。' },
+            { who: '', text: '她默默接过去，折得比你还整齐。' }
+          ]
+        },
+        {
+          text: '「你留下来帮我吧。」',
+          fav: 5, dep: 9, cool: -2,
+          replies: [
+            { who: '路阳瑞', text: '「麻烦。」' },
+            { who: '', text: '她嘴上这么说，人已经走到你旁边，把袖子挽到了手肘。' },
+            { who: '', text: '你们并肩折了一个小时。谁也没说话，但教室里安静得很舒服。' }
+          ]
+        }
+      ]
+    },
+
+    /* ---------- 6 · 你发烧了 ---------- */
+    s6: {
+      next: 's7',
+      messages: [
+        { who: '', text: '第二天你发烧没去学校。傍晚，门铃响了。' },
+        { who: '', text: '路阳瑞站在门口，帽檐压得很低，几乎遮住眼睛。手里拎着一个塑料袋。' },
+        { who: '', text: '里面装着退烧药、一小锅粥，还有一支体温计。' },
+        { who: '路阳瑞', text: '「……路过。」' }
+      ],
+      choices: [
+        {
+          text: '「你家在城西，我家在城东，怎么路过？」',
+          fav: 8, dep: 7, cool: -5,
+          replies: [
+            { who: '', text: '她把袋子往你手里一塞，转身要走。' },
+            { who: '路阳瑞', text: '「……啰嗦。」' },
+            { who: '', text: '但她走得很慢，慢到在楼梯口停了两次。' },
+            { who: '', text: '你站在门口看着她的背影，忽然出声：「喂。」' },
+            { who: '', text: '她停下来，没回头。你看见她握着楼梯扶手的手指，攥得很紧。' }
+          ]
+        },
+        {
+          text: '拉住她的袖子：「进来坐一会儿吧。」',
+          fav: 7, dep: 9, cool: -4,
+          replies: [
+            { who: '', text: '她僵在原地，低头看你抓着她袖子的手。' },
+            { who: '路阳瑞', text: '「……会传染。」' },
+            { who: '', text: '她还是进来了。坐在离床最远的那张椅子上，安安静静地看着你把粥喝完。' },
+            { who: '', text: '你喝完抬头，发现她已经靠在椅背上睡着了。' },
+            { who: '', text: '手指还搭在袋子上，里面那盒退烧药，被她提前拆好了包装。' }
+          ]
+        },
+        {
+          text: '「谢谢你，我自己可以的。」',
+          fav: 2, dep: 3, cool: -1,
+          replies: [
+            { who: '路阳瑞', text: '「哦。」' },
+            { who: '', text: '她走了。半小时后，你收到一条短信，只有两个字。' },
+            { who: '路阳瑞', text: '「吃药。」' },
+            { who: '', text: '这是她第一次主动给你发消息。' }
+          ]
+        }
+      ]
+    },
+
+    /* ---------- 7 · 图书馆 ---------- */
+    s7: {
+      next: 's8',
+      messages: [
+        { who: '', text: '图书馆靠窗的位置，你摊开卷子，在一道题上卡了十分钟。' },
+        { who: '', text: '对面的椅子被拉开。路阳瑞坐下，摊开一本和她现在年级完全无关的书。' },
+        { who: '', text: '又过了五分钟，一张草稿纸从对面推过来。' },
+        { who: '', text: '上面是完整的解题步骤，字迹很小，很工整。末尾还有一行：「这题很无聊。」' },
+        { who: '', text: '她低着头看书。书的封面朝下——完全拿倒了。' }
+      ],
+      choices: [
+        {
+          text: '「你的书拿倒了哦。」',
+          fav: 6, dep: 5, cool: -5,
+          replies: [
+            { who: '', text: '她翻书的动作卡住了。' },
+            { who: '路阳瑞', text: '「……我在看表格。」' },
+            { who: '', text: '她把书合上，压在胳膊底下，不再说话了。但耳尖的颜色出卖了她。' },
+            { who: '', text: '你憋着笑，把那道题的答案抄进本子里。' }
+          ]
+        },
+        {
+          text: '「谢谢你，阳瑞。」',
+          fav: 7, dep: 7, cool: -4,
+          replies: [
+            { who: '', text: '她没有抬头。' },
+            { who: '路阳瑞', text: '「……嗯。」' },
+            { who: '', text: '但她在草稿纸的角落，又补画了一个很小的箭头，指着下一道题。' },
+            { who: '', text: '你在箭头旁边画了一个小小的笑脸。' },
+            { who: '', text: '她看见后，把纸抽回去，在笑脸旁边又画了一个更小的、别扭的句号——像是在回应。' }
+          ]
+        },
+        {
+          text: '安静地收下草稿纸，继续做题。',
+          fav: 4, dep: 3, cool: -2,
+          replies: [
+            { who: '', text: '你们对坐到闭馆。' },
+            { who: '', text: '收拾东西的时候，你发现草稿纸背面还有一行更小的字。' },
+            { who: '路阳瑞', text: '「明天这个位置，我占。」' }
+          ]
+        }
+      ]
+    },
+
+    /* ---------- 8 · 夏日祭 ---------- */
+    s8: {
+      next: 's9',
+      messages: [
+        { who: '', text: '夏日祭的晚上，人潮像水一样流动。你被推着向前走，一不留神就失去了方向。' },
+        { who: '', text: '有人从后面攥住了你的手腕。' },
+        { who: '', text: '路阳瑞站在人群里，卫衣帽子戴在头上，只露出一双眼睛。烟花在她身后炸开。' },
+        { who: '路阳瑞', text: '「……人多。别走丢。」' },
+        { who: '', text: '她说完这句话，手却没有松开。' }
+      ],
+      choices: [
+        {
+          text: '反手握住她的手。',
+          fav: 9, dep: 10, cool: -6,
+          replies: [
+            { who: '', text: '她的手指猛地一缩，然后非常缓慢地，重新扣住了你。' },
+            { who: '路阳瑞', text: '「……热。」' },
+            { who: '', text: '可是她握得更紧了，一路握到烟花散场。' },
+            { who: '', text: '最后一发烟花炸开的时候，你侧头看她。' },
+            { who: '', text: '她也在看你。帽檐下的眼睛很亮，亮得不太像平时那个总把脸藏起来的人。' }
+          ]
+        },
+        {
+          text: '「你是特意来找我的？」',
+          fav: 7, dep: 6, cool: -5,
+          replies: [
+            { who: '', text: '她仰头看你，帽檐下的眼睛被烟花映得很亮。' },
+            { who: '路阳瑞', text: '「……碰巧。」' },
+            { who: '', text: '可她从进场开始，就在你刚才站的那个摊位前等了四十分钟。' },
+            { who: '', text: '「你脸上有棉花糖的糖渣。」她忽然说。你还没反应过来，她已经抬手，很轻地擦掉了。' }
+          ]
+        },
+        {
+          text: '「谢谢，我跟着你走。」',
+          fav: 5, dep: 4, cool: -2,
+          replies: [
+            { who: '路阳瑞', text: '「嗯。」' },
+            { who: '', text: '她走在前面，手一直向后伸着，没有收回。直到你不得不把它握住。' },
+            { who: '', text: '她的掌心很热，握得小心翼翼，像怕捏碎什么东西。' }
+          ]
+        }
+      ]
+    },
+
+    /* ---------- 9 · 冷战 ---------- */
+    s9: {
+      next: 's10',
+      messages: [
+        { who: '', text: '连续三天，路阳瑞没有和你说过一句话。' },
+        { who: '', text: '第四天，你在走廊上叫住她。她停下来，没有回头。' },
+        { who: '路阳瑞', text: '「……你最近很忙吧。」' },
+        { who: '', text: '她的声音很轻，听不出情绪。' },
+        { who: '路阳瑞', text: '「和别人一起走的时候。」' }
+      ],
+      choices: [
+        {
+          text: '「你在意这个？」',
+          fav: 7, dep: 7, cool: -5,
+          replies: [
+            { who: '', text: '她转过头看你，表情还是那么平。' },
+            { who: '路阳瑞', text: '「……不在意。」' },
+            { who: '', text: '然后她把卫衣的帽子拉起来，遮住了大半张脸。' },
+            { who: '', text: '可你没有错过，帽檐下面那双眼睛，红了一圈。' }
+          ]
+        },
+        {
+          text: '「那是我表哥，来学校接我。我解释给你听。」',
+          fav: 9, dep: 8, cool: -3,
+          replies: [
+            { who: '', text: '走廊上安静了很久。' },
+            { who: '路阳瑞', text: '「……哦。」' },
+            { who: '', text: '她把帽子放下来，露出那双有点红的眼睛。' },
+            { who: '路阳瑞', text: '「……下次，先说一声。」' },
+            { who: '', text: '说完她自己也愣住了，别过脸去，耳朵红得厉害。' }
+          ]
+        },
+        {
+          text: '「对不起，我没注意到。」',
+          fav: 6, dep: 5, cool: -2,
+          replies: [
+            { who: '', text: '她看了你一会儿。' },
+            { who: '路阳瑞', text: '「……不用对不起。」' },
+            { who: '', text: '那天放学，她第一次主动等你一起走。' }
+          ]
+        }
+      ]
+    },
+
+    /* ---------- 10 · 告白 ---------- */
+    s10: {
+      next: null,
+      messages: [
+        { who: '', text: '学期最后一天。路阳瑞的桌上放着一个空的纸箱。' },
+        { who: '', text: '她站在窗边，背对着你，卫衣的领口立起来，遮住半张脸。' },
+        { who: '路阳瑞', text: '「……我家下个月搬去南方。转学手续已经交了。」' },
+        { who: '', text: '她沉默了很久，才转过头来看你。眼睛很亮，但一点表情都没有。' },
+        { who: '路阳瑞', text: '「你有话要说吗。」' }
+      ],
+      choices: [
+        {
+          text: '「别走。我想要你留下来。」',
+          fav: 12, dep: 10, cool: -6,
+          replies: [
+            { who: '', text: '她没有动。' },
+            { who: '', text: '过了很久，久到窗外的下课铃响完了一整遍。' },
+            { who: '路阳瑞', text: '「……你这个人，真的很麻烦。」' },
+            { who: '', text: '她低下头，把脸埋进卫衣领口里，声音闷闷的。' },
+            { who: '路阳瑞', text: '「……那我不走了。」' }
+          ]
+        },
+        {
+          text: '「不管你搬去哪里，我都会找到你。」',
+          fav: 10, dep: 8, cool: -4,
+          replies: [
+            { who: '', text: '她从纸箱里抽出一张便签，写了些什么，折好，塞进你手里。' },
+            { who: '路阳瑞', text: '「……别弄丢了。」' },
+            { who: '', text: '上面是一串地址，和一串手机号。字迹比草稿纸上的还要小。' }
+          ]
+        },
+        {
+          text: '「祝你一切顺利。」',
+          fav: 1, dep: 1, cool: -1,
+          replies: [
+            { who: '路阳瑞', text: '「嗯。」' },
+            { who: '', text: '她把纸箱抱起来，从你身边走过去。' },
+            { who: '', text: '脚步声在走廊里越来越远，没有停。' }
+          ]
+        }
+      ]
+    }
+  };
+
+  /* ============================================================
+     常量 / 状态
+     ============================================================ */
+  const SAVE_KEY = 'luyangrui_save_v1';
+  const TYPE_SPEED = 24;
+
+  let state = null;
+  let token = 0;
+  let skipFlag = false;
+  let busy = false;
+  let gender = '女';
+  let toastTimer = null;
+
+  const el = function (id) { return document.getElementById(id); };
+  const screenStart = el('screen-start');
+  const screenGame  = el('screen-game');
+  const screenEnd   = el('screen-end');
+  const logEl       = el('log');
+  const choicesEl   = el('choices');
+
+  /* ============================================================
+     工具
+     ============================================================ */
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function fillName(t) { return String(t).replace(/\{name\}/g, state ? state.name : '你'); }
+
+  function showScreen(s) {
+    [screenStart, screenGame, screenEnd].forEach(function (n) { n.classList.remove('active'); });
+    s.classList.add('active');
+  }
+
+  function toast(msg) {
+    const t = el('toast');
+    t.textContent = msg;
+    t.classList.add('on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('on'); }, 1500);
+  }
+
+  function scrollBottom() {
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  /* ============================================================
+     数值
+     ============================================================ */
+  function renderStats() {
+    if (!state) return;
+    el('v-fav').textContent  = state.fav;
+    el('v-dep').textContent  = state.dep;
+    el('v-cool').textContent = state.cool;
+    el('fill-fav').style.width  = clamp(state.fav, 0, 100) + '%';
+    el('fill-dep').style.width  = clamp(state.dep, 0, 100) + '%';
+    el('fill-cool').style.width = clamp(state.cool, 0, 100) + '%';
+  }
+
+  /* ============================================================
+     打字机
+     ============================================================ */
+  function typeMessage(msg, myToken) {
+    return new Promise(function (resolve) {
+      const wrap = document.createElement('div');
+      wrap.className = 'msg ' + (msg.who ? 'msg-dialog' : 'msg-narration');
+
+      if (msg.who) {
+        const s = document.createElement('div');
+        s.className = 'speaker';
+        s.textContent = msg.who;
+        wrap.appendChild(s);
+      }
+      const p = document.createElement('p');
+      p.className = 'line';
+      wrap.appendChild(p);
+
+      logEl.appendChild(wrap);
+      scrollBottom();
+
+      const full = msg.text;
+      let i = 0;
+      skipFlag = false;
+
+      function step() {
+        if (myToken !== token) { resolve(false); return; }
+
+        if (skipFlag) {
+          p.textContent = full;
+          scrollBottom();
+          resolve(true);
+          return;
+        }
+
+        if (i >= full.length) { resolve(true); return; }
+
+        i++;
+        p.textContent = full.slice(0, i);
+
+        if (i % 3 === 0) scrollBottom();
+
+        setTimeout(step, TYPE_SPEED);
+      }
+      step();
+    });
+  }
+
+  function appendPlayerLine(text) {
+    const wrap = document.createElement('div');
+    wrap.className = 'msg msg-player';
+    const s = document.createElement('div');
+    s.className = 'speaker speaker-player';
+    s.textContent = state.name;
+    const p = document.createElement('p');
+    p.className = 'line';
+    p.textContent = text;
+    wrap.appendChild(s);
+    wrap.appendChild(p);
+    logEl.appendChild(wrap);
+    scrollBottom();
+  }
+
+  /* ============================================================
+     流程
+     ============================================================ */
+  function newState(name, g) {
+    return {
+      name: name,
+      gender: g,
+      fav: 0,
+      dep: 0,
+      cool: 60,
+      scene: 's1'
+    };
+  }
+
+  function startGame(name, g) {
+    state = newState(name, g);
+    token++;
+    logEl.innerHTML = '';
+    choicesEl.innerHTML = '';
+    renderStats();
+    showScreen(screenGame);
+    playScene('s1');
+  }
+
+  async function playScene(sceneId) {
+    const myToken = ++token;
+    const scene = SCENES[sceneId];
+    if (!scene) { showEnding(); return; }
+
+    state.scene = sceneId;
+    busy = false;
+    choicesEl.innerHTML = '';
+    logEl.innerHTML = '';
+    renderStats();
+    saveGame(false);
+
+    for (let i = 0; i < scene.messages.length; i++) {
+      const ok = await typeMessage(scene.messages[i], myToken);
+      if (!ok || myToken !== token) return;
+      await sleep(160);
+      if (myToken !== token) return;
+    }
+
+    await sleep(180);
+    if (myToken !== token) return;
+
+    renderChoices(scene, myToken);
+  }
+
+  function renderChoices(scene, myToken) {
+    choicesEl.innerHTML = '';
+    scene.choices.forEach(function (c, i) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'choice';
+      b.style.animationDelay = (i * 70) + 'ms';
+      b.textContent = fillName(c.text);
+      b.addEventListener('click', function () { pickChoice(scene, c, myToken); });
+      choicesEl.appendChild(b);
+    });
+    setTimeout(scrollBottom, 60);
+  }
+
+  async function pickChoice(scene, choice, myToken) {
+    if (busy) return;
+    if (myToken !== token) return;
+    busy = true;
+
+    choicesEl.innerHTML = '';
+
+    appendPlayerLine(fillName(choice.text));
+
+    state.fav  = clamp(state.fav  + (choice.fav  || 0), 0, 100);
+    state.dep  = clamp(state.dep  + (choice.dep  || 0), 0, 100);
+    state.cool = clamp(state.cool + (choice.cool || 0), 0, 100);
+    renderStats();
+
+    await sleep(320);
+    if (myToken !== token) return;
+
+    for (let i = 0; i < choice.replies.length; i++) {
+      const ok = await typeMessage(choice.replies[i], myToken);
+      if (!ok || myToken !== token) return;
+      await sleep(150);
+      if (myToken !== token) return;
+    }
+
+    saveGame(false);
+
+    await sleep(520);
+    if (myToken !== token) return;
+
+    if (scene.next) {
+      playScene(scene.next);
+    } else {
+      showEnding();
+    }
+  }
+
+  /* ============================================================
+     结局
+     ============================================================ */
+  function showEnding() {
+    token++;
+    busy = true;
+
+    const fav = state.fav;
+    const dep = state.dep;
+    const cool = state.cool;
+    const name = state.name;
+    const honorific = state.gender === '男' ? '哥哥' : (state.gender === '女' ? '姐姐' : '你');
+
+    let title = '';
+    let html = '';
+
+    if (fav >= 70 && dep >= 60) {
+      /* ---- 恋人结局 ---- */
+      title = '恋人结局 · 她终于叫了你的名字';
+      html =
+        '<p>一个月后，南方的搬家计划被取消了。</p>' +
+        '<p>高三的最后一个春天，路阳瑞的座位还在你旁边。</p>' +
+        '<p>「……喂。」</p>' +
+        '<p>她把脸埋在卫衣领口里，只露出一双眼睛，声音闷得像从很远的地方传过来。</p>' +
+        '<p>「……' + name + '。」</p>' +
+        '<p>你愣住了。这是她第一次，完整地叫出你的名字。</p>' +
+        '<p>「……不许笑。」</p>' +
+        '<p>她把头轻轻靠在你肩膀上，很轻，像怕被发现一样。</p>' +
+        '<p>「……以后也别走。」</p>' +
+        '<p>窗外的樱花开得正好。她终于承认，她要的不只是一个邻座。</p>';
+    } else if (fav >= 40) {
+      /* ---- 妹妹 / 家人 ---- */
+      title = '守护结局 · 唯一信任的人';
+      html =
+        '<p>路阳瑞没有转学。</p>' +
+        '<p>她还是那副面无表情的样子，还是惜字如金，还是会在你说话的时候把脸埋进领口里。</p>' +
+        '<p>但她会在你忘记带伞的每个雨天，站在校门口；会在你熬夜复习的每个晚上，把热可可放在你桌上。</p>' +
+        '<p>「……别多想。」</p>' +
+        '<p>她顿了一下。</p>' +
+        '<p>「……家人不都这样。」</p>' +
+        '<p>你成了她唯一信任的人。这样也很好。</p>';
+    } else {
+      /* ---- 路人 ---- */
+      title = '路人结局 · 没有名字的过客';
+      html =
+        '<p>路阳瑞转学去了南方。</p>' +
+        '<p>她的座位空了。桌肚里什么都没有留下，干净得像从来没有人坐过。</p>' +
+        '<p>很多年以后，你在直播平台上刷到一个弹幕很少的小主播。</p>' +
+        '<p>黑发，白色卫衣，话很少。有人问她为什么不换个热闹点的风格。</p>' +
+        '<p>「……懒得。」</p>' +
+        '<p>你看了很久，最后关掉了页面。</p>' +
+        '<p>你只是她生命里，一个没有名字的路过。</p>';
+    }
+
+    el('end-title').textContent = title;
+    el('end-text').innerHTML = html;
+    el('end-stats').innerHTML =
+      '<div class="end-stat">好感度<b>' + fav + '</b></div>' +
+      '<div class="end-stat">依赖度<b>' + dep + '</b></div>' +
+      '<div class="end-stat">高冷值<b>' + cool + '</b></div>';
+
+    clearSave();
+    refreshContinue();
+    showScreen(screenEnd);
+  }
+
+  /* ============================================================
+     存档
+     ============================================================ */
+  function saveGame(manual) {
+    if (!state) return;
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+      if (manual) toast('已存档');
+    } catch (e) {
+      if (manual) toast('存档失败');
+    }
+  }
+
+  function hasSave() {
+    try { return !!localStorage.getItem(SAVE_KEY); } catch (e) { return false; }
+  }
+
+  function clearSave() {
+    try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
+  }
+
+  function refreshContinue() {
+    el('btn-continue').style.display = hasSave() ? 'block' : 'none';
+  }
+
+  function loadGame() {
+    let raw = null;
+    try { raw = localStorage.getItem(SAVE_KEY); } catch (e) {}
+    if (!raw) { toast('没有找到存档'); return; }
+
+    let d;
+    try { d = JSON.parse(raw); } catch (e) { toast('存档已损坏'); return; }
+    if (!d || !d.scene || !SCENES[d.scene]) { toast('存档已损坏'); return; }
+
+    state = {
+      name: d.name || '你',
+      gender: d.gender || '女',
+      fav: typeof d.fav === 'number' ? d.fav : 0,
+      dep: typeof d.dep === 'number' ? d.dep : 0,
+      cool: typeof d.cool === 'number' ? d.cool : 60,
+      scene: d.scene
+    };
+
+    showScreen(screenGame);
+    renderStats();
+    playScene(state.scene);
+    toast('已读档');
+  }
+
+  /* ============================================================
+     事件绑定
+     ============================================================ */
+  document.querySelectorAll('.gender-btn').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.gender-btn').forEach(function (x) { x.classList.remove('on'); });
+      b.classList.add('on');
+      gender = b.dataset.g;
+    });
+  });
+
+  el('btn-start').addEventListener('click', function () {
+    const n = el('input-name').value.trim() || '你';
+    startGame(n, gender);
+  });
+
+  el('input-name').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') el('btn-start').click();
+  });
+
+  el('btn-continue').addEventListener('click', loadGame);
+
+  el('btn-save').addEventListener('click', function () {
+    if (!state) return;
+    saveGame(true);
+  });
+
+  el('btn-load').addEventListener('click', function () {
+    if (!hasSave()) { toast('没有找到存档'); return; }
+    loadGame();
+  });
+
+  el('btn-restart').addEventListener('click', function () {
+    if (!window.confirm('确定要重新开始吗？当前进度会丢失。')) return;
+    token++;
+    busy = false;
+    state = null;
+    clearSave();
+    refreshContinue();
+    logEl.innerHTML = '';
+    choicesEl.innerHTML = '';
+    el('input-name').value = '';
+    showScreen(screenStart);
+  });
+
+  el('btn-again').addEventListener('click', function () {
+    token++;
+    busy = false;
+    state = null;
+    refreshContinue();
+    logEl.innerHTML = '';
+    choicesEl.innerHTML = '';
+    el('input-name').value = '';
+    showScreen(screenStart);
+  });
+
+  /* 点击对话区跳过打字 */
+  logEl.addEventListener('click', function () {
+    skipFlag = true;
+  });
+
+  /* 防止移动端双击缩放 */
+  document.addEventListener('dblclick', function (e) { e.preventDefault(); }, { passive: false });
+
+  /* ============================================================
+     初始化
+     ============================================================ */
+  refreshContinue();
+
+})();
+</script>
+</body>
+</html>
