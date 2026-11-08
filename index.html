@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#fdf3f8">
-<title>攻略路瑞阳</title>
+<title>同桌的碎片日常</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{height:100%;overflow:hidden;}
@@ -92,9 +92,9 @@
   .stat-val{font-size:12px;font-weight:700;color:#7a5f72;}
   .track{height:5px;border-radius:99px;background:#f4e6ee;overflow:hidden;}
   .fill{height:100%;width:0;border-radius:99px;transition:width .5s cubic-bezier(.3,.9,.3,1);}
-  #fill-fav{background:linear-gradient(90deg,#f7b8ce,#ec8fb4);}
-  #fill-dep{background:linear-gradient(90deg,#9fd6c4,#5fbfa3);}
-  #fill-cool{background:linear-gradient(90deg,#b8aede,#8a7fc0);}
+  #fill-share{background:linear-gradient(90deg,#f7b8ce,#ec8fb4);}
+  #fill-care{background:linear-gradient(90deg,#9fd6c4,#5fbfa3);}
+  #fill-pat{background:linear-gradient(90deg,#b8aede,#8a7fc0);}
 
   .toolbar{display:flex;gap:7px;justify-content:flex-end;margin-top:9px;}
   .toolbar button{
@@ -165,6 +165,13 @@
   .end-stat{font-size:11px;letter-spacing:.08em;color:#bca9b6;}
   .end-stat b{display:block;font-size:19px;color:#d489aa;margin-top:5px;font-weight:700;}
 
+  .scene-title{
+    margin:0 0 16px;padding:0 0 10px;text-align:center;
+    font-size:11.5px;letter-spacing:.22em;color:#c9a3ba;font-weight:600;
+    border-bottom:1px dashed #ecdbe6;
+    animation:fadeUp .45s cubic-bezier(.2,.8,.3,1) both;
+  }
+
   /* ---------- 其他 ---------- */
   #toast{
     position:fixed;left:50%;bottom:14%;transform:translate(-50%,8px);
@@ -192,9 +199,9 @@
   <!-- ===== 开始页 ===== -->
   <section id="screen-start" class="screen active">
     <div class="start-card">
-      <div class="brand">T S U N D E R E · S I M</div>
-      <h1>攻略<span>路瑞阳</span></h1>
-      <p class="sub">路瑞阳惜字如金，脸上永远没有表情。<br>可他的素描本里，画满了同一个侧脸。</p>
+      <div class="brand">2022级 · 同桌</div>
+      <h1>同桌<span>的碎片日常</span></h1>
+      <p class="sub">她状态起伏不定，兴致上来就爱说笑，累了便独自沉默。<br>草稿纸上，悄悄记下和你有关的片段。</p>
 
       <label class="lbl">你的名字</label>
       <input id="input-name" type="text" maxlength="10" placeholder="请输入你的名字" autocomplete="off">
@@ -209,7 +216,7 @@
       <button id="btn-start" class="btn-main">开始游戏</button>
       <button id="btn-continue" class="btn-ghost" style="display:none;">读取存档</button>
 
-      <p class="tip">好感度 · 依赖度 · 高冷值<br>高冷值越低，他越容易破防。</p>
+      <p class="tip">分享欲 · 在意值 · 耐心值<br>每日一吵：吸引同桌注意</p>
     </div>
   </section>
 
@@ -218,16 +225,16 @@
     <div class="status">
       <div class="stats">
         <div class="stat">
-          <div class="stat-top"><span class="stat-name">好感度</span><span class="stat-val" id="v-fav">0</span></div>
-          <div class="track"><div class="fill" id="fill-fav"></div></div>
+          <div class="stat-top"><span class="stat-name">分享欲</span><span class="stat-val" id="v-share">15</span></div>
+          <div class="track"><div class="fill" id="fill-share"></div></div>
         </div>
         <div class="stat">
-          <div class="stat-top"><span class="stat-name">依赖度</span><span class="stat-val" id="v-dep">0</span></div>
-          <div class="track"><div class="fill" id="fill-dep"></div></div>
+          <div class="stat-top"><span class="stat-name">在意值</span><span class="stat-val" id="v-care">56</span></div>
+          <div class="track"><div class="fill" id="fill-care"></div></div>
         </div>
         <div class="stat">
-          <div class="stat-top"><span class="stat-name">高冷值</span><span class="stat-val" id="v-cool">60</span></div>
-          <div class="track"><div class="fill" id="fill-cool"></div></div>
+          <div class="stat-top"><span class="stat-name">耐心值</span><span class="stat-val" id="v-pat">60</span></div>
+          <div class="track"><div class="fill" id="fill-pat"></div></div>
         </div>
       </div>
       <div class="toolbar">
@@ -260,464 +267,477 @@
   'use strict';
 
   /* ============================================================
-     剧情数据
+     剧情数据（由 story.md 生成：10 章 / 30 选项 / 4 结局）
      ============================================================ */
   const SCENES = {
 
-    /* ---------- 1 · 初遇 ---------- */
     s1: {
+      title: "第一章 初见同桌·误认男生",
       next: 's2',
       messages: [
-        { who: '', text: '三月的最后一个星期，你转学到了市立高中。' },
-        { who: '', text: '班主任把你安排在靠窗的最后一排。旁边的座位趴着一个人。' },
-        { who: '', text: '黑色碎发垂在额前，白色卫衣的袖子长出一截，几乎盖住指尖。午后的光落在他后颈上，照出细软的一层绒毛。' },
-        { who: '', text: '你轻轻拉开椅子。他的睫毛颤了颤，没有睁眼。' },
-        { who: '', text: '你离得很近。近到能看见他脸颊上那道浅浅的压痕，和睫毛在眼下投出的一小片阴影。' },
-        { who: '路瑞阳', text: '「……」' },
-        { who: '', text: '他侧过脸，把脸埋进臂弯里。你看见他一小截耳尖，在光里慢慢红了。' }
+        { who: '', text: "新学期的座位表定了下来，坐在你身边的人，叫路阳瑞——外号，狗哥。" },
+        { who: '', text: "她状态起伏不定，兴致上来就爱说笑，累了便独自沉默。" },
+        { who: '', text: "没人知道她在想什么，只知道那张草稿纸上，悄悄记下和你有关的片段。" },
+        { who: '', text: "分享欲、在意值、耐心值——你们之间的每一次互动，都在悄悄改变这三个数字。" },
+        { who: '', text: "每日一吵，是你吸引同桌注意的方式。" },
+        { who: '', text: "你按照黑板PPT的座位表走进教室，乖乖找到自己的位置坐下。" },
+        { who: '', text: "后排两个同学凑过来闲聊，悄悄告诉你，你的同桌外号叫狗哥，本名路阳瑞。" },
+        { who: '', text: "你下意识觉得这个又酷又拽的外号一定是男生，心里还默默脑补了硬朗的短发、很拽的性格。" },
+        { who: '', text: "可当你放下书包，侧头准备打招呼时，彻底愣住了。" },
+        { who: '', text: "窗边坐着一个留着柔软长发的女生，校服松松垮垮搭在肩头，眉眼干净清冷，指尖轻轻转着笔，安静得不像话。" },
+        { who: '', text: "她察觉到你的注视，抬眼看向你，语气淡淡：「怎么了？」" },
       ],
       choices: [
         {
-          text: '「你好，我叫{name}，以后请多指教。」',
-          fav: 6, dep: 5, cool: -3,
+          text: "你好你好！我还以为狗哥是男生呢！",
+          ds: 10, dc: -7, dp: -3,
           replies: [
-            { who: '', text: '过了很久，他才抬起头。眼睛是很浅的黑色，看人的时候像隔着一层玻璃。' },
-            { who: '路瑞阳', text: '「路瑞阳。」' },
-            { who: '', text: '他顿了两秒，又补了一句。' },
-            { who: '路瑞阳', text: '「……记住了。」' },
-            { who: '', text: '他把脸重新埋回臂弯。你听见卫衣布料里传来一句更轻的补充。' },
-            { who: '路瑞阳', text: '「……{name}。」' },
-            { who: '', text: '不知道为什么，你的心跳漏了一拍。' }
+            { who: '', text: "你瞬间打开话痨模式，眼睛瞪得圆圆的，直白又真诚地说出自己的惊讶。" },
+            { who: '', text: "路阳瑞闻言顿了顿，原本清冷没情绪的眉眼微微松动，唇角极浅地弯了一下。她很少有人敢刚开学就这么直白跟她搭话，忍不住多看了你好几眼。" },
+            { who: '', text: "她轻轻解释：「班里乱取的外号。」" },
+            { who: '', text: "语气平淡，却没有半点不耐烦，主动接下了你突如其来的热闹开场。" },
           ]
         },
         {
-          text: '安静地坐下，不去打扰他。',
-          fav: 2, dep: 2, cool: -1,
+          text: "安静坐下，悄悄观察她不说话",
+          ds: -5, dc: -2, dp: 6,
           replies: [
-            { who: '', text: '一整节课过去了。下课铃响的时候，一张折好的纸条被推到你桌角。' },
-            { who: '', text: '上面只有三个字——「你的笔。」' },
-            { who: '', text: '你低头，发现早上掉的那支笔不知什么时候被捡了起来，连笔帽都旋好了。' },
-            { who: '', text: '你抬头看他。他正望着窗外，好像什么都没发生过。' },
-            { who: '', text: '可你的笔，明明是掉在走廊上的。' }
+            { who: '', text: "你立刻收住自己想说话的嘴，乖乖整理书本，假装淡定坐好，却忍不住用余光悄悄打量身边的新同桌。" },
+            { who: '', text: "路阳瑞敏锐察觉到你的小动作，没有拆穿。她笔尖顿在作业本上，侧头安静看了你两秒。" },
+            { who: '', text: "见你安安静静、不吵不闹，她眼底的疏离悄悄少了一点，慢慢转回视线，却不再像刚才那样紧绷戒备。" },
           ]
         },
         {
-          text: '「你长得真好看。」',
-          fav: 5, dep: 3, cool: -6,
+          text: "狗哥这个外号，是怎么来的呀？",
+          ds: 8, dc: 2, dp: -2,
           replies: [
-            { who: '', text: '他的动作停住了。' },
-            { who: '', text: '下一秒，他把整张脸埋进卫衣领口里，只露出一双眼睛。' },
-            { who: '路瑞阳', text: '「……无聊。」' },
-            { who: '', text: '可他的耳朵红得像要滴血。' },
-            { who: '', text: '你忍不住笑出声。他瞪了你一眼，耳朵却更红了。' }
+            { who: '', text: "你好奇心爆棚，凑得近了一点，亮晶晶盯着她追问。" },
+            { who: '', text: "路阳瑞被你直白的目光看得耳尖微微泛红，握着笔的手指轻轻收紧。她平时很少被人这么近距离搭话，短暂沉默后，低声简单回答：「初中带来的。」" },
+            { who: '', text: "话不多，却认认真真回应了你的问题，第一次对你主动放下了冷淡姿态。" },
           ]
-        }
+        },
       ]
     },
 
-    /* ---------- 2 · 雨天 ---------- */
     s2: {
+      title: "第二章 发书缺本·帮写名字",
       next: 's3',
       messages: [
-        { who: '', text: '放学时下起了雨。你站在校门口的屋檐下，翻遍了书包也没找到伞。' },
-        { who: '', text: '雨势很大。你正打算冒雨跑回去，头顶忽然落下一片阴影。' },
-        { who: '', text: '路瑞阳撑着一把深蓝色的伞站在你旁边。伞面不大，他只撑到自己一半。' },
-        { who: '路瑞阳', text: '「……顺路。」' },
-        { who: '', text: '他说得非常自然。可校门出去左转是教学楼，右转才是回家的方向。' }
+        { who: '', text: "开学发新书，课代表一排排传递课本。" },
+        { who: '', text: "你整理完所有书本，唯独少了一本语文书，正手忙脚乱翻桌洞，不知道该怎么办。" },
+        { who: '', text: "还没等你举手，身旁的路阳瑞已经提前抬手，安静清晰地跟老师说明你的情况。" },
+        { who: '', text: "没过多久，新的语文书送到你手上。" },
+        { who: '', text: "你刚松一口气，她却把自己干干净净的语文书推到你面前，递来一支笔：「帮我写个名字。」" },
+        { who: '', text: "你心里满是疑惑，好好的为什么让你写，但看着她平静的眼神，还是接下了笔。" },
       ],
       choices: [
         {
-          text: '「你的肩膀湿了，往这边靠一点吧。」',
-          fav: 7, dep: 6, cool: -4,
+          text: "你怎么不自己写呀？",
+          ds: 10, dc: -5, dp: -4,
           replies: [
-            { who: '', text: '他僵了僵，往你这边挪了半步，肩膀刻意和你隔开一小段距离。' },
-            { who: '路瑞阳', text: '「……吵。」' },
-            { who: '', text: '但伞柄上的手指握得很紧，一路都没让伞再偏回去。' },
-            { who: '', text: '走到你家楼下时你才发现，他的半边校服已经湿透了，贴在肩胛骨上。' }
+            { who: '', text: "你一边认真写名字，一边忍不住小声发问，满眼都是疑惑。" },
+            { who: '', text: "路阳瑞垂眸看着你落笔的字迹，指尖轻轻摩挲书页，沉默两秒才轻声道：「懒得写。」" },
+            { who: '', text: "借口随意，却一直盯着你的字看。写完后她没有立刻拿回书，反而静静看了你几秒，主动开口补了一句：「写得挺好看。」" },
+            { who: '', text: "你看着你那狗爬字体，沉默不语。" },
           ]
         },
         {
-          text: '接过伞，帮他举高。',
-          fav: 5, dep: 5, cool: -3,
+          text: "写完安静把书推回去，默默收拾书本",
+          ds: -4, dc: -3, dp: 4,
           replies: [
-            { who: '', text: '他愣了一下，仰头看伞，又看你。' },
-            { who: '路瑞阳', text: '「……你比我高。」' },
-            { who: '', text: '语气很平，但你总觉得听起来有一点不服气。' },
-            { who: '', text: '你忍不住笑。他抿了抿嘴，把脸别开。' },
-            { who: '', text: '雨声很大。你却听见他很轻地「啧」了一声。' }
+            { who: '', text: "你安安静静写完她的名字，把书整齐推回她桌面，不多问、不吵闹，乖乖收拾自己的课本。" },
+            { who: '', text: "路阳瑞低头盯着封面上你写的“路阳瑞”三个字，看了很久。她侧头看向认真收拾书本的你，语气轻轻的：「谢谢。」" },
+            { who: '', text: "简单两个字，是她很少对陌生人说的客气与温柔。" },
           ]
         },
         {
-          text: '「你是不是专门在等我？」',
-          fav: 4, dep: 4, cool: -5,
+          text: "要不要我顺便帮你把别的书也写上？",
+          ds: 7, dc: 5, dp: -3,
           replies: [
-            { who: '路瑞阳', text: '「随便站的。」' },
-            { who: '', text: '他说这句话的时候，脚步一直配合着你的速度。你慢，他就慢。' },
-            { who: '', text: '雨敲在伞面上，像谁在轻轻敲着鼓点。你低头，看见两个影子被伞拢在一起。' }
+            { who: '', text: "你写完名字，热心上头，立刻抬头笑眯眯问她，主动想要帮她包揽所有书名。" },
+            { who: '', text: "路阳瑞明显愣了一下，没想到你这么热情。她看着你亮晶晶的眼神，轻轻摇头：「不用啦。」" },
+            { who: '', text: "停顿半秒，又补充一句：「下次麻烦你就好。」悄悄给了你下次互动的机会。" },
           ]
-        }
+        },
       ]
     },
 
-    /* ---------- 3 · 便利店 ---------- */
     s3: {
+      title: "第三章 晚自习无作业·她写日记",
       next: 's4',
       messages: [
-        { who: '', text: '晚自习结束，便利店的灯白得发亮。你在关东煮的锅前犹豫。' },
-        { who: '', text: '货架后面，路瑞阳拿着一盒牛奶，正要转身。' },
-        { who: '', text: '他看见你，脚步顿住。转身要走，又折了回来。' },
-        { who: '', text: '一盒热可可被放在收银台上，推到你和店员之间。' },
-        { who: '路瑞阳', text: '「……第二份半价。」' }
+        { who: '', text: "今晚晚自习全校统一无作业，教室里安安静静，所有人都在摸鱼打发时间。" },
+        { who: '', text: "大家要么翻学生指导手册找搞笑校规，要么低头闲聊发呆，" },
+        { who: '', text: "只有你的同桌路阳瑞，拿出一本小小的随身日记本，低头认认真真写字，格外专注。" },
       ],
       choices: [
         {
-          text: '「你怎么知道我喜欢喝热可可？」',
-          fav: 8, dep: 8, cool: -4,
+          text: "凑过去小声问：你在写什么呀，日记吗？",
+          ds: 10, dc: -2, dp: -6,
           replies: [
-            { who: '', text: '他没回答，低头撕牛奶盒的吸管包装。撕了两次都没撕开。' },
-            { who: '路瑞阳', text: '「……上次你买过。」' },
-            { who: '', text: '那已经是三个月前的事了。' },
-            { who: '', text: '你怔了一下。他却像被烫到一样，把牛奶往口袋里一塞，快步走出了便利店。' },
-            { who: '', text: '你追到门口，看见他站在路灯下，帽檐压得很低，肩膀有一点僵。' }
+            { who: '', text: "你压着声音悄悄凑过去探头看，好奇心满满。" },
+            { who: '', text: "路阳瑞被你突然靠近的动作吓了一跳，下意识把本子往怀里收，肩膀微微绷紧。" },
+            { who: '', text: "见你只是好奇、没有恶意，她紧绷的身体慢慢放松，无奈又纵容地看着你：「一点碎碎念。」" },
+            { who: '', text: "没有具体细说，却不反感你的靠近。" },
           ]
         },
         {
-          text: '「那我请你吃关东煮，一起吃吧。」',
-          fav: 6, dep: 7, cool: -3,
+          text: "自己翻手册找离谱校规，转头讲给她听",
+          ds: 9, dc: -5, dp: -2,
           replies: [
-            { who: '路瑞阳', text: '「随便。」' },
-            { who: '', text: '他把书包放在靠窗的高脚椅上，坐下了。你们中间隔着一个座位的距离——但他没走。' },
-            { who: '', text: '热气从锅里升起来，模糊了玻璃窗。你偷偷看他，他正低头吹着萝卜上的汤。' },
-            { who: '', text: '睫毛垂下来，安静得像一幅画。' }
+            { who: '', text: "你翻手册翻到几条离谱校规，忍不出憋笑，立刻侧头凑到她旁边，小声讲给她听。" },
+            { who: '', text: "原本低头写字的路阳瑞，慢慢停下笔，转头安静听你碎碎吐槽。" },
+            { who: '', text: "清冷安静的她，被你逗得唇角微微上扬，还会轻轻点头附和你：「确实很离谱。」" },
           ]
         },
         {
-          text: '「谢谢，我自己来就好。」',
-          fav: 2, dep: 2, cool: -1,
+          text: "不打扰她，悄悄偷看她写日记",
+          ds: -6, dc: 0, dp: 6,
           replies: [
-            { who: '', text: '他点了点头，把可可推回去，转身出门。' },
-            { who: '', text: '你结账的时候，店员说：「那盒可可，刚才那位同学已经付过钱啦。」' },
-            { who: '', text: '你冲到门口。雨已经停了，街道上只有一个走远的背影。' }
+            { who: '', text: "你强行按住自己话痨的本性，乖乖不打扰她，只偶尔用余光悄悄看她写字的侧脸。" },
+            { who: '', text: "路阳瑞完全察觉到你的视线，却没有半点不自在。她写字的速度慢慢变慢，偶尔抬眼偷偷瞥你一下。" },
+            { who: '', text: "安静的晚自习里，你们谁也不说话，却一直互相留意着彼此。" },
           ]
-        }
+        },
       ]
     },
 
-    /* ---------- 4 · 天台 ---------- */
     s4: {
+      title: "第四章 军训小组·取名吴彦祖",
       next: 's5',
       messages: [
-        { who: '', text: '午休的时候，你推开天台的门，发现这里已经有人了。' },
-        { who: '', text: '路瑞阳坐在栏杆边，膝盖上摊着一本素描本，铅笔在纸上走得很轻。' },
-        { who: '', text: '听见声音，他「啪」地合上本子。' },
-        { who: '路瑞阳', text: '「……看什么。」' },
-        { who: '', text: '你还是瞥见了。纸上是一个人的侧脸，线条很淡，画了很多遍，又被擦掉了很多遍。' },
-        { who: '', text: '那个侧脸的轮廓，你有种说不出的熟悉。' }
+        { who: '', text: "军训结束后，你们前后桌一共七个人关系飞速变好，一起晒太阳、一起摸鱼、一起偷偷偷懒，攒了一大堆专属小组的趣事。" },
+        { who: '', text: "班会课大家讨论小组名字，吵吵闹闹各种脑洞，最后有人一拍桌子：“就叫吴彦祖小组！”" },
+        { who: '', text: "小组内瞬间爆笑起哄。" },
+        { who: '', text: "路阳瑞坐在班级里，边笑边闹，拉着你的胳膊说：“好搞笑啊。”" },
       ],
       choices: [
         {
-          text: '「画得很好看，能让我看看吗？」',
-          fav: 7, dep: 6, cool: -4,
+          text: "跟着大声附和：好！就叫吴彦祖！太酷了！",
+          ds: 11, dc: -3, dp: -4,
           replies: [
-            { who: '', text: '他沉默了很久，久到你以为他会拒绝。' },
-            { who: '', text: '然后他把本子递过来，手指还捏着一角，像随时准备收回去。' },
-            { who: '路瑞阳', text: '「……随便看看。很难看。」' },
-            { who: '', text: '你翻开。整整一页，都是同一个人的侧脸。' },
-            { who: '', text: '翻到最后一页时，你的手停住了——那是你，坐在窗边，垂着眼睫的样子。' }
+            { who: '', text: "你瞬间跟着全班一起热闹起哄，声音又亮又活泼，格外显眼。" },
+            { who: '', text: "路阳瑞原本开心的脸上，被你这股鲜活的元气逗得大笑，眼底笑意更加清晰可见。" },
+            { who: '', text: "等周围人吵完，她侧头单独跟你小声说：「你还挺喜欢凑热闹。」语气带着淡淡的纵容。" },
           ]
         },
         {
-          text: '「原来你会画画啊。」',
-          fav: 5, dep: 4, cool: -3,
+          text: "歪头问她：你觉得吴彦祖这个名字怎么样？",
+          ds: 8, dc: 3, dp: -2,
           replies: [
-            { who: '路瑞阳', text: '「嗯。」' },
-            { who: '', text: '他把本子塞进卫衣的大口袋里，低着头，用鞋尖磨了磨地面。' },
-            { who: '', text: '「……别到处说。」' },
-            { who: '', text: '他抬眼看你，那双总像隔着一层玻璃的眼睛，第一次认真地停在你脸上。' }
+            { who: '', text: "所有人都在自顾自吵闹，只有你专门转头询问她的意见，把她的想法放在第一位。" },
+            { who: '', text: "路阳瑞愣了愣，没想到你会专门问她。她认真想了想，回答：「挺搞笑的，适合咱们。」" },
+            { who: '', text: "说完一直看着你，似乎很想知道你的反应。" },
           ]
         },
         {
-          text: '「抱歉，打扰你了。」转身准备离开。',
-          fav: 1, dep: 1, cool: 1,
+          text: "静静看着大家吵，不主动搭话，默默观察路阳瑞",
+          ds: -5, dc: 0, dp: 6,
           replies: [
-            { who: '', text: '你走到门口的时候，听见身后传来很轻的一句。' },
-            { who: '路瑞阳', text: '「……门，不用关。」' },
-            { who: '', text: '天台的风把这句话吹得很散。你回头，看见他还坐在那儿，本子摊开在膝盖上。' }
+            { who: '', text: "你收起热闹，安静坐在位置上围观全班起哄，注意力却大半落在身边的她身上。" },
+            { who: '', text: "路阳瑞感受到你专注的目光，没有躲开。在乱糟糟的教室里，她唯独回应你的视线，轻轻对你眨了下眼，算作无声打招呼。" },
           ]
-        }
+        },
       ]
     },
 
-    /* ---------- 5 · 文化祭前夜 ---------- */
     s5: {
+      title: "第五章 手机被收·赌气报800米",
       next: 's6',
       messages: [
-        { who: '', text: '文化祭前夜，教室的灯还亮着。你留下来做最后一批装饰。' },
-        { who: '', text: '时钟指向九点半。路瑞阳的座位早就空了。' },
-        { who: '', text: '门被推开。他拎着两瓶水走进来，把其中一瓶放在你桌上。' },
-        { who: '路瑞阳', text: '「……老师让我拿的。」' },
-        { who: '', text: '可是办公室这个点早就锁门了。' }
+        { who: '', text: "学校突然突击仪容物品大检查，消息早就在隔壁班传开了。" },
+        { who: '', text: "你提前知情，但心里想着路阳瑞一向安分自律，肯定不会带手机，就没有特意提醒她。" },
+        { who: '', text: "谁知道检查时，她的手机被老师当场没收。" },
+        { who: '', text: "她闷闷不乐了好几天，为了申请拿回手机，干脆主动在运动会报名表填上了最难的800米长跑，打算靠成绩补过。" },
+        { who: '', text: "她捏着报名表，神色淡淡，看不出情绪。" },
       ],
       choices: [
         {
-          text: '「骗人，办公室早就锁了。」',
-          fav: 6, dep: 6, cool: -5,
+          text: "你怎么报800米啊，很累的！",
+          ds: 10, dc: -2, dp: -4,
           replies: [
-            { who: '', text: '他拉开椅子坐下，拧开自己那瓶水喝了一口。' },
-            { who: '路瑞阳', text: '「……你很闲。」' },
-            { who: '', text: '但他一直坐到了你把最后一张纸花折完。' },
-            { who: '', text: '收拾东西的时候，你发现他不知什么时候已经把地扫干净了。' }
+            { who: '', text: "你瞬间急了，压低声音认认真真劝她，满脸都是担心。" },
+            { who: '', text: "路阳瑞看着你着急的样子，眼底的阴郁散了一点。她轻轻叹气：「不跑拿不到手机。」" },
+            { who: '', text: "语气无奈，却因为你的关心，柔和了很多，还主动跟你解释缘由。" },
           ]
         },
         {
-          text: '「谢谢你特意回来。」',
-          fav: 8, dep: 8, cool: -3,
+          text: "要不要我陪你一起练，赛前帮你计时？",
+          ds: 7, dc: 5, dp: -3,
           replies: [
-            { who: '', text: '他喝水的动作停了一下。' },
-            { who: '路瑞阳', text: '「……顺路。」' },
-            { who: '', text: '他家的方向，和学校完全相反。' },
-            { who: '', text: '你什么都没说，只是把桌上的纸花推了一半到他那边。' },
-            { who: '', text: '他默默接过去，折得比你还整齐。' }
+            { who: '', text: "你心疼她一个人扛着，主动提出全程陪练，帮她计时、陪她适应耐力跑。" },
+            { who: '', text: "路阳瑞明显怔住，从来没有人主动陪她训练。她沉默两秒，轻轻点头：「好。」" },
+            { who: '', text: "从这天开始，她每次训练，都会下意识回头找你的身影。" },
           ]
         },
         {
-          text: '「你留下来帮我吧。」',
-          fav: 5, dep: 9, cool: -2,
+          text: "安静看着她，心里有点愧疚没提前提醒她",
+          ds: -5, dc: 2, dp: 6,
           replies: [
-            { who: '路瑞阳', text: '「麻烦。」' },
-            { who: '', text: '他嘴上这么说，人已经走到你旁边，把袖子挽到了手肘。' },
-            { who: '', text: '你们并肩折了一个小时。谁也没说话，但教室里安静得很舒服。' }
+            { who: '', text: "你安静看着她手里的报名表，心里满是愧疚，如果当初提醒她一句，她就不会变成这样。" },
+            { who: '', text: "路阳瑞看出了你眼底的自责，反过来轻声安慰你：「不关你的事，是我自己侥幸。」" },
+            { who: '', text: "明明是她受了罚，却还温柔安抚你的情绪。" },
           ]
-        }
+        },
       ]
     },
 
-    /* ---------- 6 · 你发烧了 ---------- */
     s6: {
+      title: "第六章 运动会看台·无视初中同学",
       next: 's7',
       messages: [
-        { who: '', text: '第二天你发烧没去学校。傍晚，门铃响了。' },
-        { who: '', text: '路瑞阳站在门口，帽檐压得很低，几乎遮住眼睛。手里拎着一个塑料袋。' },
-        { who: '', text: '里面装着退烧药、一小锅粥，还有一支体温计。' },
-        { who: '路瑞阳', text: '「……路过。」' }
+        { who: '', text: "运动会全校按班级列队坐看台，一排排整整齐齐。" },
+        { who: '', text: "你作为历史课代表，趁着比赛空档，正在帮老师抽查同学背诵。" },
+        { who: '', text: "低头核对完内容，你随意抬头，隔着好几个班级，看见了你的初中同学。" },
+        { who: '', text: "但你心里毫无波澜，一点都不想搭理。" },
+        { who: '', text: "路阳瑞顺着你的视线望过去，轻声问：「认识？」" },
       ],
       choices: [
         {
-          text: '「你家在城西，我家在城东，怎么路过？」',
-          fav: 8, dep: 7, cool: -5,
+          text: "嗯，初中同学，不熟。",
+          ds: 4, dc: 0, dp: -2,
           replies: [
-            { who: '', text: '他把袋子往你手里一塞，转身要走。' },
-            { who: '路瑞阳', text: '「……啰嗦。」' },
-            { who: '', text: '但他走得很慢，慢到在楼梯口停了两次。' },
-            { who: '', text: '你站在门口看着他的背影，忽然出声：「喂。」' },
-            { who: '', text: '他停下来，没回头。你看见他握着楼梯扶手的手指，攥得很紧。' }
+            { who: '', text: "你淡淡一句带过旧人，态度坦荡疏离。" },
+            { who: '', text: "路阳瑞听完，彻底放下心来。她侧头凑近一点，小声跟你说：「不熟就不用理。」" },
+            { who: '', text: "下意识站在你这边，默默偏向你、陪着你。" },
           ]
         },
         {
-          text: '拉住他的袖子：「进来坐一会儿吧。」',
-          fav: 7, dep: 9, cool: -4,
+          text: "直接摇摇头，继续核对背诵内容",
+          ds: -4, dc: 2, dp: 6,
           replies: [
-            { who: '', text: '他僵在原地，低头看你抓着他袖子的手。' },
-            { who: '路瑞阳', text: '「……会传染。」' },
-            { who: '', text: '他还是进来了。坐在离床最远的那张椅子上，安安静静地看着你把粥喝完。' },
-            { who: '', text: '你喝完抬头，发现他已经靠在椅背上睡着了。' },
-            { who: '', text: '手指还搭在袋子上，里面那盒退烧药，被他提前拆好了包装。' }
+            { who: '', text: "你轻轻摇头，立刻收回目光，专心做自己的事，完全不受外界干扰。" },
+            { who: '', text: "路阳瑞看着你认真专注的侧脸，安安静静陪你坐着。全程不打扰你，默默帮你留意周围吵闹的人群，替你隔绝杂音。" },
           ]
         },
         {
-          text: '「谢谢你，我自己可以的。」',
-          fav: 2, dep: 3, cool: -1,
+          text: "别管别人啦，我们看比赛吧！",
+          ds: 8, dc: 5, dp: -3,
           replies: [
-            { who: '路瑞阳', text: '「哦。」' },
-            { who: '', text: '他走了。半小时后，你收到一条短信，只有两个字。' },
-            { who: '路瑞阳', text: '「吃药。」' },
-            { who: '', text: '这是他第一次主动给你发消息。' }
+            { who: '', text: "你干脆利落跳过无关的人，转头兴致勃勃拉她一起看赛场。" },
+            { who: '', text: "路阳瑞被你突如其来的热情带偏，目光牢牢落在你脸上。她轻轻应声：「好。」" },
+            { who: '', text: "整场运动会，她再也没看过别处，只静静陪你看比赛。" },
           ]
-        }
+        },
       ]
     },
 
-    /* ---------- 7 · 图书馆 ---------- */
     s7: {
+      title: "第七章 体育课自由活动·超市买水果",
       next: 's8',
       messages: [
-        { who: '', text: '图书馆靠窗的位置，你摊开卷子，在一道题上卡了十分钟。' },
-        { who: '', text: '对面的椅子被拉开。路瑞阳坐下，摊开一本和他现在年级完全无关的书。' },
-        { who: '', text: '又过了五分钟，一张草稿纸从对面推过来。' },
-        { who: '', text: '上面是完整的解题步骤，字迹很小，很工整。末尾还有一行：「这题很无聊。」' },
-        { who: '', text: '他低着头看书。书的封面朝下——完全拿倒了。' }
+        { who: '', text: "体育课自由活动，全班解散休息。" },
+        { who: '', text: "学校小超市只有几样简单水果和零食，大家成群结队跑去买吃的。" },
+        { who: '', text: "你拉着路阳瑞一起去超市闲逛，打算买点水果垫垫肚子。" },
       ],
       choices: [
         {
-          text: '「你的书拿倒了哦。」',
-          fav: 6, dep: 5, cool: -5,
+          text: "叽叽喳喳跟她商量：我们买点春见粑粑柑好不好！",
+          ds: 10, dc: -2, dp: -4,
           replies: [
-            { who: '', text: '他翻书的动作卡住了。' },
-            { who: '路瑞阳', text: '「……我在看表格。」' },
-            { who: '', text: '他把书合上，压在胳膊底下，不再说话了。但耳尖的颜色出卖了他。' },
-            { who: '', text: '你憋着笑，把那道题的答案抄进本子里。' }
+            { who: '', text: "你指着货架上的春见粑粑柑，兴冲冲跟她分享，不停念叨很甜很好吃。" },
+            { who: '', text: "路阳瑞站在你身边，安静听你碎碎念。看着你雀跃的样子，她忍不住轻笑出声：「你很爱吃橘子？」" },
+            { who: '', text: "主动跟你搭话，耐心接住你所有的话痨输出。" },
           ]
         },
         {
-          text: '「谢谢你，瑞阳。」',
-          fav: 7, dep: 7, cool: -4,
+          text: "挑好水果之后，顺手问她要不要帮她也带一份",
+          ds: 7, dc: 5, dp: -3,
           replies: [
-            { who: '', text: '他没有抬头。' },
-            { who: '路瑞阳', text: '「……嗯。」' },
-            { who: '', text: '但他在草稿纸的角落，又补画了一个很小的箭头，指着下一道题。' },
-            { who: '', text: '你在箭头旁边画了一个小小的笑脸。' },
-            { who: '', text: '他看见后，把纸抽回去，在笑脸旁边又画了一个更小的、别扭的句号——像是在回应。' }
+            { who: '', text: "你挑好自己的水果，第一时间转头问她的喜好，下意识事事惦记她。" },
+            { who: '', text: "路阳瑞愣了愣，很少有人会优先想到她。她轻轻摇头：「我不吃。」" },
+            { who: '', text: "顿了顿又补充：「谢谢你问我。」认真回应你的细心。" },
           ]
         },
         {
-          text: '安静地收下草稿纸，继续做题。',
-          fav: 4, dep: 3, cool: -2,
+          text: "自己默默挑选，偶尔偷偷瞟一眼她",
+          ds: -5, dc: 0, dp: 6,
           replies: [
-            { who: '', text: '你们对坐到闭馆。' },
-            { who: '', text: '收拾东西的时候，你发现草稿纸背面还有一行更小的字。' },
-            { who: '路瑞阳', text: '「明天这个位置，我占。」' }
+            { who: '', text: "你乖乖挑水果，不吵闹、不聒噪，偶尔偷偷看她安静站着的样子。" },
+            { who: '', text: "路阳瑞全程看着你挑挑选选的背影，目光温柔安静。你回头对视的时候，她也不躲闪，轻轻对你弯了弯眼。" },
           ]
-        }
+        },
       ]
     },
 
-    /* ---------- 8 · 夏日祭 ---------- */
     s8: {
+      title: "第八章 上课犯困·让你别提醒",
       next: 's9',
       messages: [
-        { who: '', text: '夏日祭的晚上，人潮像水一样流动。你被推着向前走，一不留神就失去了方向。' },
-        { who: '', text: '有人从后面攥住了你的手腕。' },
-        { who: '', text: '路瑞阳站在人群里，卫衣帽子戴在头上，只露出一双眼睛。烟花在他身后炸开。' },
-        { who: '路瑞阳', text: '「……人多。别走丢。」' },
-        { who: '', text: '他说完这句话，手却没有松开。' }
+        { who: '', text: "路阳瑞特别容易上课犯困，经常低头一点一点打瞌睡。" },
+        { who: '', text: "你担心她被老师抓到扣分，一节课要轻轻喊她、碰她十好几次。" },
+        { who: '', text: "持续一段时间后，课间她转头看向你，语气平平：「不用再提醒我了。」" },
       ],
       choices: [
         {
-          text: '反手握住他的手。',
-          fav: 9, dep: 10, cool: -6,
+          text: "委屈巴巴问：可是我怕你被老师点名扣分啊",
+          ds: 10, dc: 0, dp: -4,
           replies: [
-            { who: '', text: '他的手指猛地一缩，然后非常缓慢地，重新扣住了你。' },
-            { who: '路瑞阳', text: '「……热。」' },
-            { who: '', text: '可是他握得更紧了，一路握到烟花散场。' },
-            { who: '', text: '最后一发烟花炸开的时候，你侧头看他。' },
-            { who: '', text: '他也在看你。帽檐下的眼睛很亮，亮得不太像平时那个总把脸藏起来的人。' }
+            { who: '', text: "你瞬间委屈，认认真真跟她解释自己的担心，眼神真诚又可爱。" },
+            { who: '', text: "路阳瑞看着你委屈的模样，心底一软。她放轻语气跟你坦白：「我自己有数，不会被抓。」" },
+            { who: '', text: "知道你每一次吵闹，全部都是为了她好。" },
           ]
         },
         {
-          text: '「你是特意来找我的？」',
-          fav: 7, dep: 6, cool: -5,
+          text: "点点头答应，后面默默帮她留意老师",
+          ds: -4, dc: 3, dp: 6,
           replies: [
-            { who: '', text: '他仰头看你，帽檐下的眼睛被烟花映得很亮。' },
-            { who: '路瑞阳', text: '「……碰巧。」' },
-            { who: '', text: '可他从进场开始，就在你刚才站的那个摊位前等了四十分钟。' },
-            { who: '', text: '「你脸上有棉花糖的糖渣。」他忽然说。你还没反应过来，他已经抬手，很轻地擦掉了。' }
+            { who: '', text: "你乖乖听话不再叫醒她，尊重她的选择。但依旧不放心，全程默默帮她盯老师、放哨。" },
+            { who: '', text: "路阳瑞其实全部知道。她半梦半醒间，总能感受到你悄悄观察讲台的小动作，心里悄悄记着你的温柔。" },
           ]
         },
         {
-          text: '「谢谢，我跟着你走。」',
-          fav: 5, dep: 4, cool: -2,
+          text: "那我少提醒一点，危险的时候再叫你好不好？",
+          ds: 7, dc: 7, dp: -3,
           replies: [
-            { who: '路瑞阳', text: '「嗯。」' },
-            { who: '', text: '他走在前面，手一直向后伸着，没有收回。直到你不得不把它握住。' },
-            { who: '', text: '他的掌心很热，握得小心翼翼，像怕捏碎什么东西。' }
+            { who: '', text: "你温柔折中，不想打扰她，也不想她受罚，认真跟她商量相处方式。" },
+            { who: '', text: "路阳瑞看着你认真谈判的样子，眼底温柔更甚，轻轻答应：「可以。」" },
+            { who: '', text: "从这之后，她格外包容你的所有小啰嗦。" },
           ]
-        }
+        },
       ]
     },
 
-    /* ---------- 9 · 冷战 ---------- */
     s9: {
+      title: "第九章 作业太多·学校延长放学",
       next: 's10',
       messages: [
-        { who: '', text: '连续三天，路瑞阳没有和你说过一句话。' },
-        { who: '', text: '第四天，你在走廊上叫住他。他停下来，没有回头。' },
-        { who: '路瑞阳', text: '「……你最近很忙吧。」' },
-        { who: '', text: '他的声音很轻，听不出情绪。' },
-        { who: '路瑞阳', text: '「和别人一起走的时候。」' }
+        { who: '', text: "班里老师风格不一，有的严厉严格，有的温和松弛。" },
+        { who: '', text: "大家习惯先赶难度大的理科作业，文科留在后面写，可作业量堆积太多，永远写不完。" },
+        { who: '', text: "大量校友反馈作业过载，晚自习时学校广播突然通知：全校延长放学时间。" },
+        { who: '', text: "全班瞬间崩溃，集体压低声音疯狂吐槽。" },
       ],
       choices: [
         {
-          text: '「你在意这个？」',
-          fav: 7, dep: 7, cool: -5,
+          text: "小声跟她吐槽：真的崩溃，本来就写不完啊！",
+          ds: 10, dc: -2, dp: -4,
           replies: [
-            { who: '', text: '他转过头看你，表情还是那么平。' },
-            { who: '路瑞阳', text: '「……不在意。」' },
-            { who: '', text: '然后他把卫衣的帽子拉起来，遮住了大半张脸。' },
-            { who: '', text: '可你没有错过，帽檐下面那双眼睛，红了一圈。' }
+            { who: '', text: "你凑到她身边，跟她统一战线疯狂吐槽，满脸生无可恋。" },
+            { who: '', text: "路阳瑞被你无奈的样子逗笑，难得多说几句：「确实越来越累了。」" },
+            { who: '', text: "她陪着你一起抱怨、一起叹气，瞬间拉近了双人默契。" },
           ]
         },
         {
-          text: '「那是我表哥，来学校接我。我解释给你听。」',
-          fav: 9, dep: 8, cool: -3,
+          text: "叹气：算了，先抓紧写，能写多少写多少",
+          ds: -5, dc: 2, dp: 6,
           replies: [
-            { who: '', text: '走廊上安静了很久。' },
-            { who: '路瑞阳', text: '「……哦。」' },
-            { who: '', text: '他把帽子放下来，露出那双有点红的眼睛。' },
-            { who: '路瑞阳', text: '「……下次，先说一声。」' },
-            { who: '', text: '说完他自己也愣住了，别过脸去，耳朵红得厉害。' }
+            { who: '', text: "你短暂吐槽后迅速冷静，打算抓紧时间赶作业。" },
+            { who: '', text: "路阳瑞看你心态很稳，也跟着沉下心学习。她侧头对你说：「一起写，快一点。」" },
+            { who: '', text: "主动跟你并肩努力，互相陪伴赶作业。" },
           ]
         },
         {
-          text: '「对不起，我没注意到。」',
-          fav: 6, dep: 5, cool: -2,
+          text: "转头问她：你打算先写哪一科？",
+          ds: 7, dc: 5, dp: -3,
           replies: [
-            { who: '', text: '他看了你一会儿。' },
-            { who: '路瑞阳', text: '「……不用对不起。」' },
-            { who: '', text: '那天放学，他第一次主动等你一起走。' }
+            { who: '', text: "乱糟糟的抱怨声里，你唯独在意她的状态，优先问她的计划。" },
+            { who: '', text: "路阳瑞抬眼看你，认真回答：「先写数学。」" },
+            { who: '', text: "说完主动把练习册往你桌边靠了靠，和你挨得更近，并肩学习。" },
           ]
-        }
+        },
       ]
     },
 
-    /* ---------- 10 · 告白 ---------- */
     s10: {
+      title: "第十章 三周一放假·终章剧情",
       next: null,
       messages: [
-        { who: '', text: '学期最后一天。路瑞阳的桌上放着一个空的纸箱。' },
-        { who: '', text: '他站在窗边，背对着你，卫衣的领口立起来，遮住半张脸。' },
-        { who: '路瑞阳', text: '「……我家下个月搬去南方。转学手续已经交了。」' },
-        { who: '', text: '他沉默了很久，才转过头来看你。眼睛很亮，但一点表情都没有。' },
-        { who: '路瑞阳', text: '「你有话要说吗。」' }
+        { who: '', text: "高中日子日复一日循环往复，上课、作业、晚自习，枯燥又单调。" },
+        { who: '', text: "学校三周才放一次假，越是临近假期，全班越是躁动激动，所有人都在倒数日子、规划假期生活。" },
+        { who: '', text: "课间，路阳瑞转着手里的笔，目光落在你脸上，轻声开口：「还有几天就放假了。」" },
       ],
       choices: [
         {
-          text: '「别走。我想要你留下来。」',
-          fav: 12, dep: 10, cool: -6,
+          text: "兴冲冲碎碎念：我假期计划都想好啦！",
+          ds: 10, dc: -2, dp: -4,
           replies: [
-            { who: '', text: '他没有动。' },
-            { who: '', text: '过了很久，久到窗外的下课铃响完了一整遍。' },
-            { who: '路瑞阳', text: '「……你这个人，真的很麻烦。」' },
-            { who: '', text: '他低下头，把脸埋进卫衣领口里，声音闷闷的。' },
-            { who: '路瑞阳', text: '「……那我不走了。」' }
+            { who: '', text: "你瞬间开启话痨模式，叽叽喳喳跟她分享你的假期安排，活力满满。" },
+            { who: '', text: "路阳瑞安静托腮听你讲完，眼底满是温柔笑意。她轻轻问你：「听起来很好玩，很期待？」" },
+            { who: '', text: "全程耐心接住你所有的热闹与分享。" },
           ]
         },
         {
-          text: '「不管你搬去哪里，我都会找到你。」',
-          fav: 10, dep: 8, cool: -4,
+          text: "温柔问她：那你放假打算去哪里呀？",
+          ds: 7, dc: 5, dp: -3,
           replies: [
-            { who: '', text: '他从纸箱里抽出一张便签，写了些什么，折好，塞进你手里。' },
-            { who: '路瑞阳', text: '「……别弄丢了。」' },
-            { who: '', text: '上面是一串地址，和一串手机号。字迹比草稿纸上的还要小。' }
+            { who: '', text: "你不急于说自己，先温柔询问她的安排，满心都是好奇与在意。" },
+            { who: '', text: "路阳瑞沉默片刻，低声道：「没什么安排，在家待着。」" },
+            { who: '', text: "说完认真看着你：「你如果出门，可以跟我说说。」悄悄期待你的分享。" },
           ]
         },
         {
-          text: '「祝你一切顺利。」',
-          fav: 1, dep: 1, cool: -1,
+          text: "安静点头刷题，默默倒数假期",
+          ds: -5, dc: 2, dp: 6,
           replies: [
-            { who: '路瑞阳', text: '「嗯。」' },
-            { who: '', text: '他把纸箱抱起来，从你身边走过去。' },
-            { who: '', text: '脚步声在走廊里越来越远，没有停。' }
+            { who: '', text: "你安安静静收心刷题，不吵不闹，心里默默倒数放假。" },
+            { who: '', text: "路阳瑞看着你安稳认真的样子，也跟着静下心来。她陪你一起安静学习，偶尔侧头偷看你，陪着你度过最后的校园时光。" },
           ]
-        }
+        },
       ]
-    }
+    },
+  };
+
+  const ENDINGS = {
+    tian: {
+      title: "双向偏爱 · 甜结局",
+      cond: "分享欲≥70 ＋ 在意值≥65 ＋ 耐心值40–70",
+      body: [
+        "你热烈直白、爱分享、会惦记、会关心。",
+        "你吵吵闹闹的陪伴，一点点融化了路阳瑞所有的清冷和疏离。",
+        "别人眼里高冷寡言的“狗哥”，唯独对你温柔、对你耐心、对你主动搭话。",
+        "枯燥的三周一轮回的高中生活里，你们互相惦记、互相陪伴、互相偏爱，成为彼此青春里最特别的例外。",
+      ]
+    },
+    nuan: {
+      title: "岁岁并肩 · 暖结局",
+      cond: "分享欲40–69 ＋ 在意值≥60 ＋ 耐心值≥70",
+      body: [
+        "你温柔稳定、包容安静、事事上心。",
+        "你从不吵闹过度，也从不刻意疏远，一直稳稳陪在她身边。",
+        "你尊重她的性格、体谅她的慵懒、包容她的安静。",
+        "没有轰轰烈烈的互动，却攒满了一整个学期的双向默契。",
+        "课桌之间短短一寸距离，是青春最安稳、最长久的温柔并肩。",
+      ]
+    },
+    yihan: {
+      title: "浅遇浅离 · 遗憾结局",
+      cond: "分享欲20–39 ＋ 在意值30–59 ＋ 耐心值20–69",
+      body: [
+        "你的态度忽冷忽热、时近时远。",
+        "偶尔热情搭话，偶尔沉默疏离，从来没有坚定地走向她。",
+        "你们一起经历了开学、发书、晚自习、运动会、日常琐碎，却始终隔着一层薄薄的距离。",
+        "她对你动过温柔，你对她有过在意，却谁都没有往前一步。",
+        "最后只留下一段，刚好相识、没能深交的青春遗憾。",
+      ]
+    },
+    shuli: {
+      title: "人海陌路 · 疏离结局",
+      cond: "分享欲≤19 ＋ 在意值≤29 ＋ 耐心值≤19",
+      body: [
+        "你全程沉默、被动、疏离。",
+        "很少主动分享、很少主动关心、很少主动靠近。",
+        "你们虽坐了整整一学期同桌，却从未真正走进彼此的世界。",
+        "一次次上学放假循环，你们越来越陌生、越来越客气。",
+        "最后沦为人海里，最普通、最无交集的过路同学。",
+      ]
+    },
   };
 
   /* ============================================================
      常量 / 状态
      ============================================================ */
-  const SAVE_KEY = 'luruiyang_save_v1';
+  const SAVE_KEY = 'luyangrui_save_v2';
+  const LEGACY_KEYS = ['luyangrui_save_v1'];
   const TYPE_SPEED = 24;
+  const GAP_MAX = 20;                        /* 兜底容忍缺口（与 balance_check.py 一致） */
+  const INIT = { share: 15, care: 56, pat: 60 };
+  const ORDER = ['tian', 'nuan', 'yihan', 'shuli'];
+  const ZONES = {
+    tian:  [[70, 100], [65, 100], [40, 70]],
+    nuan:  [[40, 69], [60, 100], [70, 100]],
+    yihan: [[20, 39], [30, 59], [20, 69]],
+    shuli: [[0, 19], [0, 29], [0, 19]]
+  };
 
   let state = null;
   let token = 0;
@@ -739,6 +759,9 @@
   function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
   function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
   function fillName(t) { return String(t).replace(/\{name\}/g, state ? state.name : '你'); }
+  function esc(t) {
+    return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
 
   function showScreen(s) {
     [screenStart, screenGame, screenEnd].forEach(function (n) { n.classList.remove('active'); });
@@ -762,12 +785,44 @@
      ============================================================ */
   function renderStats() {
     if (!state) return;
-    el('v-fav').textContent  = state.fav;
-    el('v-dep').textContent  = state.dep;
-    el('v-cool').textContent = state.cool;
-    el('fill-fav').style.width  = clamp(state.fav, 0, 100) + '%';
-    el('fill-dep').style.width  = clamp(state.dep, 0, 100) + '%';
-    el('fill-cool').style.width = clamp(state.cool, 0, 100) + '%';
+    el('v-share').textContent = state.share;
+    el('v-care').textContent  = state.care;
+    el('v-pat').textContent   = state.pat;
+    el('fill-share').style.width = clamp(state.share, 0, 100) + '%';
+    el('fill-care').style.width  = clamp(state.care, 0, 100) + '%';
+    el('fill-pat').style.width   = clamp(state.pat, 0, 100) + '%';
+  }
+
+  /* ============================================================
+     结局判定：优先级 + 兜底
+       ① 三项全中 -> 按 甜 > 暖 > 遗憾 > 疏离 定案
+       ② 双项命中且缺口 <= GAP_MAX -> 取缺口最小者
+       ③ 兜底 -> 疏离
+     ============================================================ */
+  function gapOf(v, r) { return v < r[0] ? r[0] - v : (v > r[1] ? v - r[1] : 0); }
+
+  function judgeEnding(share, care, pat) {
+    const vals = [share, care, pat];
+    for (let i = 0; i < ORDER.length; i++) {
+      const k = ORDER[i];
+      if (ZONES[k].every(function (r, idx) { return gapOf(vals[idx], r) === 0; })) {
+        return { key: k, level: 1 };
+      }
+    }
+    let best = null;
+    for (let i = 0; i < ORDER.length; i++) {
+      const k = ORDER[i];
+      let sat = 0, gap = 0;
+      ZONES[k].forEach(function (r, idx) {
+        const g = gapOf(vals[idx], r);
+        if (g === 0) sat++;
+        gap += g;
+      });
+      if (sat >= 2 && gap <= GAP_MAX && (!best || gap < best.gap)) {
+        best = { key: k, gap: gap };
+      }
+    }
+    return best ? { key: best.key, level: 2 } : { key: 'shuli', level: 3 };
   }
 
   /* ============================================================
@@ -840,9 +895,9 @@
     return {
       name: name,
       gender: g,
-      fav: 0,
-      dep: 0,
-      cool: 60,
+      share: INIT.share,
+      care: INIT.care,
+      pat: INIT.pat,
       scene: 's1'
     };
   }
@@ -857,6 +912,15 @@
     playScene('s1');
   }
 
+  function renderSceneTitle(scene) {
+    if (!scene.title) return;
+    const t = document.createElement('div');
+    t.className = 'scene-title';
+    t.textContent = scene.title;
+    logEl.appendChild(t);
+    scrollBottom();
+  }
+
   async function playScene(sceneId) {
     const myToken = ++token;
     const scene = SCENES[sceneId];
@@ -868,6 +932,10 @@
     logEl.innerHTML = '';
     renderStats();
     saveGame(false);
+
+    renderSceneTitle(scene);
+    await sleep(140);
+    if (myToken !== token) return;
 
     for (let i = 0; i < scene.messages.length; i++) {
       const ok = await typeMessage(scene.messages[i], myToken);
@@ -905,9 +973,9 @@
 
     appendPlayerLine(fillName(choice.text));
 
-    state.fav  = clamp(state.fav  + (choice.fav  || 0), 0, 100);
-    state.dep  = clamp(state.dep  + (choice.dep  || 0), 0, 100);
-    state.cool = clamp(state.cool + (choice.cool || 0), 0, 100);
+    state.share = clamp(state.share + (choice.ds || 0), 0, 100);
+    state.care  = clamp(state.care  + (choice.dc || 0), 0, 100);
+    state.pat   = clamp(state.pat   + (choice.dp || 0), 0, 100);
     renderStats();
 
     await sleep(320);
@@ -939,59 +1007,17 @@
     token++;
     busy = true;
 
-    const fav = state.fav;
-    const dep = state.dep;
-    const cool = state.cool;
-    const name = state.name;
-    const honorific = state.gender === '男' ? '哥哥' : (state.gender === '女' ? '姐姐' : '你');
+    const r = judgeEnding(state.share, state.care, state.pat);
+    const data = ENDINGS[r.key] || ENDINGS.shuli;
 
-    let title = '';
-    let html = '';
-
-    if (fav >= 70 && dep >= 60) {
-      /* ---- 恋人结局 ---- */
-      title = '恋人结局 · 他终于叫了你的名字';
-      html =
-        '<p>一个月后，南方的搬家计划被取消了。</p>' +
-        '<p>高三的最后一个春天，路瑞阳的座位还在你旁边。</p>' +
-        '<p>「……喂。」</p>' +
-        '<p>他把脸埋在卫衣领口里，只露出一双眼睛，声音闷得像从很远的地方传过来。</p>' +
-        '<p>「……' + name + '。」</p>' +
-        '<p>你愣住了。这是他第一次，完整地叫出你的名字。</p>' +
-        '<p>「……不许笑。」</p>' +
-        '<p>他把头轻轻靠在你肩膀上，很轻，像怕被发现一样。</p>' +
-        '<p>「……以后也别走。」</p>' +
-        '<p>窗外的樱花开得正好。他终于承认，他要的不只是一个邻座。</p>';
-    } else if (fav >= 40) {
-      /* ---- 弟弟 / 家人 ---- */
-      title = '守护结局 · 唯一信任的人';
-      html =
-        '<p>路瑞阳没有转学。</p>' +
-        '<p>他还是那副面无表情的样子，还是惜字如金，还是会在你说话的时候把脸埋进领口里。</p>' +
-        '<p>但他会在你忘记带伞的每个雨天，站在校门口；会在你熬夜复习的每个晚上，把热可可放在你桌上。</p>' +
-        '<p>「……别多想。」</p>' +
-        '<p>他顿了一下。</p>' +
-        '<p>「……家人不都这样。」</p>' +
-        '<p>你成了他唯一信任的人。这样也很好。</p>';
-    } else {
-      /* ---- 路人 ---- */
-      title = '路人结局 · 没有名字的过客';
-      html =
-        '<p>路瑞阳转学去了南方。</p>' +
-        '<p>他的座位空了。桌肚里什么都没有留下，干净得像从来没有人坐过。</p>' +
-        '<p>很多年以后，你在直播平台上刷到一个弹幕很少的小主播。</p>' +
-        '<p>黑发，白色卫衣，话很少。有人问他为什么不换个热闹点的风格。</p>' +
-        '<p>「……懒得。」</p>' +
-        '<p>你看了很久，最后关掉了页面。</p>' +
-        '<p>你只是他生命里，一个没有名字的路过。</p>';
-    }
-
-    el('end-title').textContent = title;
-    el('end-text').innerHTML = html;
+    el('end-title').textContent = data.title;
+    el('end-text').innerHTML = data.body.map(function (p) {
+      return '<p>' + esc(p) + '</p>';
+    }).join('');
     el('end-stats').innerHTML =
-      '<div class="end-stat">好感度<b>' + fav + '</b></div>' +
-      '<div class="end-stat">依赖度<b>' + dep + '</b></div>' +
-      '<div class="end-stat">高冷值<b>' + cool + '</b></div>';
+      '<div class="end-stat">分享欲<b>' + state.share + '</b></div>' +
+      '<div class="end-stat">在意值<b>' + state.care + '</b></div>' +
+      '<div class="end-stat">耐心值<b>' + state.pat + '</b></div>';
 
     clearSave();
     refreshContinue();
@@ -999,7 +1025,7 @@
   }
 
   /* ============================================================
-     存档
+     存档（v2；v1 旧档明确作废）
      ============================================================ */
   function saveGame(manual) {
     if (!state) return;
@@ -1019,6 +1045,16 @@
     try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
   }
 
+  function purgeLegacy() {
+    let found = false;
+    LEGACY_KEYS.forEach(function (k) {
+      try {
+        if (localStorage.getItem(k)) { localStorage.removeItem(k); found = true; }
+      } catch (e) {}
+    });
+    return found;
+  }
+
   function refreshContinue() {
     el('btn-continue').style.display = hasSave() ? 'block' : 'none';
   }
@@ -1029,15 +1065,21 @@
     if (!raw) { toast('没有找到存档'); return; }
 
     let d;
-    try { d = JSON.parse(raw); } catch (e) { toast('存档已损坏'); return; }
-    if (!d || !d.scene || !SCENES[d.scene]) { toast('存档已损坏'); return; }
+    try { d = JSON.parse(raw); } catch (e) { toast('存档已损坏，请重新开始'); return; }
+    if (!d || !d.scene || !SCENES[d.scene] ||
+        typeof d.share !== 'number' || typeof d.care !== 'number' || typeof d.pat !== 'number') {
+      clearSave();
+      refreshContinue();
+      toast('存档不兼容，请重新开始');
+      return;
+    }
 
     state = {
       name: d.name || '你',
       gender: d.gender || '女',
-      fav: typeof d.fav === 'number' ? d.fav : 0,
-      dep: typeof d.dep === 'number' ? d.dep : 0,
-      cool: typeof d.cool === 'number' ? d.cool : 60,
+      share: clamp(d.share, 0, 100),
+      care: clamp(d.care, 0, 100),
+      pat: clamp(d.pat, 0, 100),
       scene: d.scene
     };
 
@@ -1114,7 +1156,11 @@
   /* ============================================================
      初始化
      ============================================================ */
+  const hadLegacy = purgeLegacy();
   refreshContinue();
+  if (hadLegacy) {
+    setTimeout(function () { toast('旧版本存档已失效，请重新开始'); }, 500);
+  }
 
 })();
 </script>
